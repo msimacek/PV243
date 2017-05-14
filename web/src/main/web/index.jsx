@@ -2,6 +2,7 @@ import 'react-hot-loader/patch';
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
+import Bootstrap from 'bootstrap/dist/css/bootstrap.css';
 
 import App from './modules/App';
 

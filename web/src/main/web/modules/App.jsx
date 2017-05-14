@@ -1,8 +1,9 @@
 import React from 'react'
+import { Button } from 'react-bootstrap';
 import '../style.css'
 
 export default class App extends React.Component {
   render() {
-    return <div>foo</div>
+    return <Button>foo</Button>
   }
 }
