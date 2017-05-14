@@ -13,8 +13,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
+@XmlRootElement
 public class Book implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -57,6 +60,7 @@ public class Book implements Serializable {
     @OneToMany(mappedBy = "book")
     private List<Volume> volumes = new ArrayList<>();
 
+    @XmlTransient
     public List<Volume> getVolumes() {
         return volumes;
     }

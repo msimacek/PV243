@@ -13,8 +13,10 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
+@XmlRootElement
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 

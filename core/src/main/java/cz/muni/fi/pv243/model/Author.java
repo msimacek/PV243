@@ -12,8 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
+@XmlRootElement
 public class Author implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

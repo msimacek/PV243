@@ -19,4 +19,8 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
   </dependencies>
+  <packaging>war</packaging>
+  <properties>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
+  </properties>
 </project>
