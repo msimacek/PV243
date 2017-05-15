@@ -45,5 +45,18 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin("index.css")
-  ]
+  ],
+  devServer: {
+    historyApiFallback: true,
+    port: 8081,
+    proxy: {
+      '/rest': {
+        target: {
+          host: "localhost",
+          protocol: 'http:',
+          port: 8080
+        },
+      }
+    }
+  },
 };
