@@ -1,5 +1,6 @@
 package cz.muni.fi.pv243.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import cz.muni.fi.pv243.model.Author;
 import cz.muni.fi.pv243.model.Book;
 
 /**
@@ -33,9 +35,23 @@ public class BookEndpoint {
     @PersistenceContext(unitName = "pv243-persistence-unit")
     private EntityManager em;
 
+    private void processAuthors(Book book) {
+        if (book.getAuthors() == null)
+            return;
+        List<Author> newAuthors = new ArrayList<>(book.getAuthors().size());
+        for (Author authorDesc : book.getAuthors()) {
+            Author author = em.find(Author.class, authorDesc.getId());
+            if (author != null) {
+                newAuthors.add(author);
+            }
+        }
+        book.setAuthors(newAuthors);
+    }
+
     @POST
     @Consumes("application/json")
     public Response create(@Valid Book entity) {
+        processAuthors(entity);
         em.persist(entity);
         return Response
                 .created(UriBuilder.fromResource(BookEndpoint.class).path(String.valueOf(entity.getId())).build())
