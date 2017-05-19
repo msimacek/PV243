@@ -67,14 +67,39 @@ class BookList extends React.Component {
     }
 }
 
+class NavItem extends React.Component {
+    render() {
+        return (
+            <li className="nav-item">
+                <Link to={this.props.to}>{this.props.children}</Link>
+            </li>
+        );
+    }
+}
+
+class NavBar extends React.Component {
+    render() {
+        return (
+            <nav className="navbar">
+                <div className="navbar-header">
+                    <a className="navbar-brand" href="#">Library manager</a>
+                </div>
+                <ul className="nav navbar-nav">
+                    <NavItem to="/book/create">Create book</NavItem>
+                </ul>
+            </nav>
+        );
+    }
+}
+
 class Base extends React.Component {
     render() {
         return (
             <div>
-                <Link to="/create">Create</Link>
+                <NavBar />
                 <Switch>
                     <Route exact path="/" component={BookList} />
-                    <Route path="/create" component={withRouter(CreateBook)} />
+                    <Route path="/book/create" component={withRouter( CreateBook )} />
                 </Switch>
             </div>
         )
