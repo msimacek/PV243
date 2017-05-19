@@ -16,7 +16,7 @@ class NavItem extends React.Component {
 class NavBar extends React.Component {
     render() {
         return (
-            <nav className="navbar">
+            <nav className="navbar container">
                 <div className="navbar-header">
                     <a className="navbar-brand" href="#">Library manager</a>
                 </div>
@@ -33,10 +33,12 @@ class Base extends React.Component {
         return (
             <div>
                 <NavBar />
-                <Switch>
-                    <Route exact path="/" component={ListBooks} />
-                    <Route path="/book/create" component={CreateBook} />
-                </Switch>
+                <div className="container">
+                    <Switch>
+                        <Route exact path="/" component={ListBooks} />
+                        <Route path="/book/create" component={CreateBook} />
+                    </Switch>
+                </div>
             </div>
         )
     }
