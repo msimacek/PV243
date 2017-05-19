@@ -3,21 +3,30 @@ import * as B from 'react-bootstrap';
 import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom'
 import '../style.css'
 
+function apiGet( endpoint ) {
+    return fetch( endpoint, { headers: { 'Accept': 'application/json' } } )
+        .then( response => response.json() );
+}
+
+function apiPost( endpoint, data ) {
+    var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    return fetch( "/rest/books", { method: "POST", body: JSON.stringify( data ), headers: headers } );
+}
+
 class CreateBook extends React.Component {
     handleSubmit( event ) {
         event.preventDefault();
 
-        var data = JSON.stringify( {
+        var data = {
             title: this.refs.title.value,
             isbn: this.refs.isbn.value,
             authors: [],
-        } );
-        var headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
         };
-        fetch( "/rest/books", { method: "POST", body: data, headers: headers } )
-            .then( () => this.props.history.push("/") )
+        apiPost( "/rest/books", data )
+            .then(() => this.props.history.push( "/" ) )
             .catch( function( res ) { console.log( res ) } );
     }
 
@@ -39,8 +48,7 @@ class BookList extends React.Component {
     }
 
     componentDidMount() {
-        fetch( "/rest/books" )
-            .then( response => response.json() )
+        apiGet( "/rest/books" )
             .then( json => {
                 this.setState( { books: json } );
             } );
