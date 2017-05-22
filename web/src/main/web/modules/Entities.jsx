@@ -109,7 +109,7 @@ class ListView extends React.Component {
     }
 
     componentDidMount() {
-        apiGet( this.endpoint )
+        apiGet( this.props.endpoint )
             .then( json => {
                 this.setState( { loaded: true, objects: json } );
             } )
@@ -119,38 +119,32 @@ class ListView extends React.Component {
     }
 
     render() {
-        if ( !this.state.loaded )
-            return <div>Loading</div>;
+        let content;
         if ( this.state.error )
-            return <div>Loading error: {this.state.error.message}</div>
-        if ( !this.state.objects.length )
-            return <div>No entities in the database</div>;
+            content = <div>Loading error: {this.state.error.message}</div>;
+        else if ( !this.state.loaded )
+            content = <div>Loading</div>;
+        else if ( !this.state.objects.length )
+            content = <div>No entities in the database</div>;
+        else
+            content = (
+                <B.ListGroup>
+                    {this.state.objects.map( object => <B.ListGroupItem key={object.id}>{this.props.renderObject( object )}</B.ListGroupItem> )}
+                </B.ListGroup>
+            );
         return (
-            <B.ListGroup>
-                {this.state.objects.map( object => this.renderObject( object ) )}
-            </B.ListGroup>
+            <div>
+                <h2>{this.props.title}</h2>
+                {content}
+            </div>
         );
     }
 }
 
-export class ListBooks extends ListView {
-    constructor( props ) {
-        super( props );
-        this.endpoint = 'books';
-    }
-
-    renderObject( book ) {
-        return <B.ListGroupItem key={book.id}>{book.title}</B.ListGroupItem>;
-    }
+export function ListBooks() {
+    return <ListView endpoint="books" title="All books" renderObject={book => book.title} />;
 }
 
-export class ListAuthors extends ListView {
-    constructor( props ) {
-        super( props );
-        this.endpoint = 'authors';
-    }
-
-    renderObject( author ) {
-        return <B.ListGroupItem key={author.id}>{author.name} {author.surname}</B.ListGroupItem>;
-    }
+export function ListAuthors() {
+    return <ListView endpoint="authors" title="All authors" renderObject={author => `${author.name} ${author.surname}`} />;
 }
