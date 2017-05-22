@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @XmlRootElement
@@ -40,6 +41,7 @@ public class Author implements Serializable {
     @ManyToMany
     private List<Book> books = new ArrayList<>();
 
+    @XmlTransient
     public List<Book> getBooks() {
         return books;
     }

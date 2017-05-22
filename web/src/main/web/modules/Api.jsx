@@ -1,6 +1,10 @@
 export function apiGet( endpoint ) {
-    return fetch( endpoint, { headers: { 'Accept': 'application/json' } } )
-        .then( response => response.json() );
+    return fetch( `/rest/${endpoint}`, { headers: { 'Accept': 'application/json' } } )
+        .then( response => {
+            if ( response.ok )
+                return response.json();
+            throw new Error( response.statusText );
+        } );
 }
 
 export function apiPost( endpoint, data ) {
@@ -8,5 +12,5 @@ export function apiPost( endpoint, data ) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     };
-    return fetch( "/rest/books", { method: "POST", body: JSON.stringify( data ), headers: headers } );
+    return fetch( `/rest/${endpoint}`, { method: "POST", body: JSON.stringify( data ), headers: headers } );
 }
