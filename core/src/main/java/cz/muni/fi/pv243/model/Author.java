@@ -10,10 +10,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-
-import org.hibernate.validator.constraints.NotEmpty;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @XmlRootElement
@@ -38,7 +38,7 @@ public class Author implements Serializable {
     @Column
     private Integer diedYear;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "authors")
     private List<Book> books = new ArrayList<>();
 
     @XmlTransient

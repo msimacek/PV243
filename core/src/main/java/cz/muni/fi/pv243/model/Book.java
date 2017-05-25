@@ -39,7 +39,7 @@ public class Book implements Serializable {
     @Column
     private String desciption;
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Author> authors = new ArrayList<>();
 
     public List<Author> getAuthors() {
