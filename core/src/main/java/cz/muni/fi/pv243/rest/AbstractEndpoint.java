@@ -35,7 +35,7 @@ public abstract class AbstractEndpoint<T> {
         }
         service.create(entity);
         URI url = UriBuilder.fromResource(getClass()).path(service.getEntityId(entity).toString()).build();
-        return Response.created(url).build();
+        return Response.created(url).entity(entity).build();
     }
 
     @DELETE
