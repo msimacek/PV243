@@ -24,9 +24,9 @@ public class BookService extends AbstractService<Book> {
         List<Author> newAuthors = new ArrayList<>(book.getAuthors().size());
         for (Author authorDesc : book.getAuthors()) {
             Author author = authorService.findById(authorDesc.getId());
-            if (author != null) {
-                newAuthors.add(author);
-            }
+            if (author == null)
+                throw new ServiceException("Author not found (id=" + authorDesc.getId() + ")");
+            newAuthors.add(author);
         }
         book.setAuthors(newAuthors);
     }
