@@ -34,6 +34,18 @@
       <version>2.1.0.Alpha2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-rest-client-impl-3x</artifactId>
+      <version>1.0.0.Alpha4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jackson-provider</artifactId>
+        <version>3.0.19.SP1-redhat-1</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
   <packaging>war</packaging>
   <properties>
