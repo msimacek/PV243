@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom'
 import '../style.css'
+import 'react-select/dist/react-select.css'
 import { CreateBook, ListBooks, CreateAuthor, ListAuthors } from './Entities'
 
 class NavItem extends React.Component {

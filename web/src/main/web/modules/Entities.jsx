@@ -1,16 +1,38 @@
 import React from 'react'
 import * as B from 'react-bootstrap';
-import { Link, withRouter } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom';
+import ReactSelect from 'react-select';
 
 import { apiGet, apiPost } from './Api'
 
-function Input( { label, ...rest } ) {
+function formControl( Component, { label, ...rest } ) {
     return (
         <div className="form-group">
             {label && <label>{label}</label>}
-            <input className="form-control" {...rest} />
+            <Component className="form-control" {...rest} />
         </div>
     );
+}
+
+const Input = props => formControl( 'input', props );
+
+function Select( { label, ...rest } ) {
+    return (
+        <div className="form-group">
+            {label && <label>{label}</label>}
+            <ReactSelect.Async {...rest} />
+        </div>
+    );
+}
+
+function authorString( author ) {
+    return `${author.name} ${author.surname}`;
+}
+
+function authorsString( authors ) {
+    if ( !authors.length )
+        return "unknown author";
+    return authors.map( authorString ).join( ', ' );
 }
 
 export class CreateAuthor extends React.Component {
@@ -58,7 +80,7 @@ export class CreateAuthor extends React.Component {
 export class CreateBook extends React.Component {
     constructor( props ) {
         super( props );
-        this.state = { title: "", isbn: "" };
+        this.state = { title: "", isbn: "", authors: [] };
     }
 
     handleSubmit = ( event ) => {
@@ -67,7 +89,7 @@ export class CreateBook extends React.Component {
         var data = {
             title: this.state.title,
             isbn: this.state.isbn,
-            authors: [],
+            authors: this.state.authors.map( author => ( { id: author.value } ) ),
         };
         apiPost( "books", data )
             .then(() => this.props.history.push( "/books" ) )
@@ -84,6 +106,22 @@ export class CreateBook extends React.Component {
         } );
     }
 
+    handleAuthorsChange = ( values ) => {
+        console.log( values[0] );
+        this.setState( { authors: values } );
+    }
+
+    getAuthors() {
+        return apiGet( 'authors' )
+            .then( authors => {
+                return {
+                    options: authors.map( author =>
+                        ( { value: author.id, label: authorString( author ) } )
+                    )
+                };
+            } );
+    }
+
     render() {
         return (
             <div className="panel">
@@ -91,7 +129,10 @@ export class CreateBook extends React.Component {
                 <form onSubmit={this.handleSubmit}>
                     <Input type="text" onChange={this.handleInputChange} name="title" label="Title" />
                     <Input type="text" onChange={this.handleInputChange} name="isbn" label="ISBN" />
-                    <button type="submit" onChange={this.handleInputChange} className="btn btn-primary">Create</button>
+                    <Select multi onChange={this.handleAuthorsChange}
+                        loadOptions={this.getAuthors} value={this.state.authors}
+                        name="authors" label="Authors" />
+                    <button type="submit" className="btn btn-primary">Create</button>
                 </form>
             </div>
         );
@@ -142,9 +183,9 @@ class ListView extends React.Component {
 }
 
 export function ListBooks() {
-    return <ListView endpoint="books" title="All books" renderObject={book => book.title} />;
+    return <ListView endpoint="books" title="All books" renderObject={book => `${book.title} (${authorsString(book.authors)})`} />;
 }
 
 export function ListAuthors() {
-    return <ListView endpoint="authors" title="All authors" renderObject={author => `${author.name} ${author.surname}`} />;
+    return <ListView endpoint="authors" title="All authors" renderObject={authorString} />;
 }
