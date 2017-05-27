@@ -218,10 +218,9 @@ class ListView extends React.Component {
             content = (
                 <B.ListGroup>
                     {this.state.objects.map( object =>
-                        <B.ListGroupItem key={object.id}>
+                        <Link key={object.id} to={`/${this.props.endpoint}/${object.id}`} className="list-group-item list-group-item-action">
                             {this.props.renderObject( object )}
-                            <Link className="btn btn-default" to={`${this.props.endpoint}/${object.id}/edit`}>Edit</Link>
-                        </B.ListGroupItem>
+                        </Link>
                     )}
                 </B.ListGroup>
             );
@@ -240,4 +239,51 @@ export function ListBooks() {
 
 export function ListAuthors() {
     return <ListView endpoint="authors" title="All authors" renderObject={authorString} />;
+}
+
+class GenericDetail extends React.Component {
+    constructor( props ) {
+        super( props );
+        this.state = { loaded: false };
+        this.id = this.props.match.params.id;
+    }
+
+    componentDidMount() {
+        apiGet( `${this.endpoint}/${this.id}` )
+            .then( entity => {
+                entity.loaded = true;
+                this.setState( entity );
+            } );
+    }
+
+    render() {
+        if ( !this.state.loaded )
+            return <div>Loading</div>;
+        return (
+            <div className="panel">
+                <h2>{this.entityName} detail - {this.state.title}</h2>
+                <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>
+                {this.renderDetail()}
+            </div>
+        );
+    }
+}
+
+export class BookDetail extends GenericDetail {
+    constructor( props ) {
+        super( props );
+        this.endpoint = "books";
+        this.entityName = "Book";
+    }
+
+    renderDetail() {
+        return (
+            <dl className="dl-horizontal">
+                <dt>Title</dt><dd>{this.state.title}</dd>
+                <dt>Authors</dt><dd>{authorsString( this.state.authors )}</dd>
+                <dt>ISBN</dt><dd>{this.state.isbn}</dd>
+                <dt>Description</dt><dd>{this.state.description}</dd>
+            </dl>
+        );
+    }
 }
