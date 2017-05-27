@@ -14,3 +14,11 @@ export function apiPost( endpoint, data ) {
     };
     return fetch( `/rest/${endpoint}`, { method: "POST", body: JSON.stringify( data ), headers: headers } );
 }
+
+export function apiPut( endpoint, data ) {
+    var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
+    return fetch( `/rest/${endpoint}`, { method: "PUT", body: JSON.stringify( data ), headers: headers } );
+}

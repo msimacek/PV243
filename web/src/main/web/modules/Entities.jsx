@@ -3,7 +3,7 @@ import * as B from 'react-bootstrap';
 import { Link, withRouter } from 'react-router-dom';
 import ReactSelect from 'react-select';
 
-import { apiGet, apiPost } from './Api'
+import { apiGet, apiPost, apiPut } from './Api'
 
 function formControl( Component, { label, ...rest } ) {
     return (
@@ -35,21 +35,32 @@ function authorsString( authors ) {
     return authors.map( authorString ).join( ', ' );
 }
 
-export class CreateAuthor extends React.Component {
+class GenericForm extends React.Component {
     constructor( props ) {
         super( props );
-        this.state = { name: "", surname: "" };
+
+        this.id = this.props.id;
+    }
+
+    stateToData( data ) {
+        return data;
+    }
+
+    stateFromData( data ) {
+        return data;
     }
 
     handleSubmit = ( event ) => {
         event.preventDefault();
 
-        var data = {
-            name: this.state.name,
-            surname: this.state.surname,
-        };
-        apiPost( "authors", data )
-            .then(() => this.props.history.push( "/authors" ) )
+        var data = this.stateToData( Object.assign( {}, this.state ) );
+
+        let promise;
+        if ( this.id )
+            promise = apiPut( `${this.endpoint}/${this.id}`, data );
+        else
+            promise = apiPost( this.endpoint, data );
+        promise.then(() => this.props.history.push( `/${this.endpoint}` ) )
             .catch( function( res ) { console.log( res ) } );
     }
 
@@ -63,79 +74,115 @@ export class CreateAuthor extends React.Component {
         } );
     }
 
+    componentDidMount() {
+        if ( this.id ) {
+            apiGet( `${this.endpoint}/${this.id}` )
+                .then( entity => { this.setState( this.stateFromData( entity ) ) } )
+                .catch( function( res ) { console.log( res ) } );
+        }
+    }
+
     render() {
+        let action = this.id ? "Edit" : "Create";
         return (
             <div className="panel">
-                <h2>Create author</h2>
+                <h2>{action} {this.entityName}</h2>
                 <form onSubmit={this.handleSubmit}>
-                    <Input type="text" onChange={this.handleInputChange} name="name" label="Name" />
-                    <Input type="text" onChange={this.handleInputChange} name="surname" label="Surname" />
-                    <button type="submit" onChange={this.handleInputChange} className="btn btn-primary">Create</button>
+                    {this.renderForm()}
+                    <button type="submit" className="btn btn-primary">{action}</button>
                 </form>
             </div>
         );
     }
 }
 
-export class CreateBook extends React.Component {
+class AuthorForm extends GenericForm {
+    constructor( props ) {
+        super( props );
+        this.state = { name: "", surname: "" };
+        this.endpoint = "authors";
+        this.entityName = "author";
+    }
+
+    renderForm() {
+        return (
+            <div>
+                <Input type="text" value={this.state.name} onChange={this.handleInputChange} name="name" label="Name" />
+                <Input type="text" value={this.state.surname} onChange={this.handleInputChange} name="surname" label="Surname" />
+            </div>
+        );
+    }
+}
+
+export class CreateAuthor extends React.Component {
+    render() {
+        return <AuthorForm />;
+    }
+}
+
+export class EditAuthor extends React.Component {
+    render() {
+        return <AuthorForm id={this.props.match.params.id} />;
+    }
+}
+
+class BookForm extends GenericForm {
     constructor( props ) {
         super( props );
         this.state = { title: "", isbn: "", authors: [] };
+        this.endpoint = "books";
+        this.entityName = "book";
     }
 
-    handleSubmit = ( event ) => {
-        event.preventDefault();
-
-        var data = {
-            title: this.state.title,
-            isbn: this.state.isbn,
-            authors: this.state.authors.map( author => ( { id: author.value } ) ),
-        };
-        apiPost( "books", data )
-            .then(() => this.props.history.push( "/books" ) )
-            .catch( function( res ) { console.log( res ) } );
+    stateToData( data ) {
+        data.authors = data.authors.map( author => ( { id: author.value } ) );
+        return data;
     }
 
-    handleInputChange = ( event ) => {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        this.setState( {
-            [name]: value
-        } );
+    stateFromData( data ) {
+        data.authors = data.authors.map( this.authorValue );
+        return data;
     }
 
     handleAuthorsChange = ( values ) => {
-        console.log( values[0] );
         this.setState( { authors: values } );
     }
 
-    getAuthors() {
+    authorValue( author ) {
+        return { value: author.id, label: authorString( author ) };
+    }
+
+    getAuthors = () => {
         return apiGet( 'authors' )
             .then( authors => {
                 return {
-                    options: authors.map( author =>
-                        ( { value: author.id, label: authorString( author ) } )
-                    )
+                    options: authors.map( this.authorValue )
                 };
             } );
     }
 
-    render() {
+    renderForm() {
         return (
-            <div className="panel">
-                <h2>Create book</h2>
-                <form onSubmit={this.handleSubmit}>
-                    <Input type="text" onChange={this.handleInputChange} name="title" label="Title" />
-                    <Input type="text" onChange={this.handleInputChange} name="isbn" label="ISBN" />
-                    <Select multi onChange={this.handleAuthorsChange}
-                        loadOptions={this.getAuthors} value={this.state.authors}
-                        name="authors" label="Authors" />
-                    <button type="submit" className="btn btn-primary">Create</button>
-                </form>
+            <div>
+                <Input type="text" value={this.state.title} onChange={this.handleInputChange} name="title" label="Title" />
+                <Input type="text" value={this.state.isbn} onChange={this.handleInputChange} name="isbn" label="ISBN" />
+                <Select multi onChange={this.handleAuthorsChange}
+                    loadOptions={this.getAuthors} value={this.state.authors}
+                    name="authors" label="Authors" />
             </div>
         );
+    }
+}
+
+export class CreateBook extends React.Component {
+    render() {
+        return <BookForm />;
+    }
+}
+
+export class EditBook extends React.Component {
+    render() {
+        return <BookForm id={this.props.match.params.id} />;
     }
 }
 
@@ -170,7 +217,12 @@ class ListView extends React.Component {
         else
             content = (
                 <B.ListGroup>
-                    {this.state.objects.map( object => <B.ListGroupItem key={object.id}>{this.props.renderObject( object )}</B.ListGroupItem> )}
+                    {this.state.objects.map( object =>
+                        <B.ListGroupItem key={object.id}>
+                            {this.props.renderObject( object )}
+                            <Link className="btn btn-default" to={`${this.props.endpoint}/${object.id}/edit`}>Edit</Link>
+                        </B.ListGroupItem>
+                    )}
                 </B.ListGroup>
             );
         return (
@@ -183,7 +235,7 @@ class ListView extends React.Component {
 }
 
 export function ListBooks() {
-    return <ListView endpoint="books" title="All books" renderObject={book => `${book.title} (${authorsString(book.authors)})`} />;
+    return <ListView endpoint="books" title="All books" renderObject={book => `${book.title} (${authorsString( book.authors )})`} />;
 }
 
 export function ListAuthors() {
