@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @XmlRootElement
@@ -42,6 +43,7 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     private List<Loan> loans = new ArrayList<>();
 
+    @XmlTransient
     public List<Loan> getLoans() {
         return loans;
     }
