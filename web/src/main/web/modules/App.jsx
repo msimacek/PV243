@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom'
 import '../style.css'
 import 'react-select/dist/react-select.css'
-import { CreateBook, EditBook, ListBooks, BookDetail, CreateAuthor, EditAuthor, ListAuthors } from './Entities'
+import { BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors, UserForm, ListUsers } from './Entities'
 
 class NavItem extends React.Component {
     render() {
@@ -26,6 +26,8 @@ class NavBar extends React.Component {
                     <NavItem to="/books/create">Create book</NavItem>
                     <NavItem to="/authors">List authors</NavItem>
                     <NavItem to="/authors/create">Create author</NavItem>
+                    <NavItem to="/users">List users</NavItem>
+                    <NavItem to="/users/create">Create user</NavItem>
                 </ul>
             </nav>
         );
@@ -41,12 +43,15 @@ class Base extends React.Component {
                     <Switch>
                         <Route exact path="/" component={ListBooks} />
                         <Route exact path="/books" component={ListBooks} />
-                        <Route exact path="/books/create" component={CreateBook} />
+                        <Route exact path="/books/create" component={BookForm} />
                         <Route exact path="/books/:id" component={BookDetail} />
-                        <Route exact path="/books/:id/edit" component={EditBook} />
+                        <Route exact path="/books/:id/edit" component={BookForm} />
                         <Route exact path="/authors" component={ListAuthors} />
-                        <Route exact path="/authors/create" component={CreateAuthor} />
-                        <Route exact path="/authors/:id/edit" component={EditAuthor} />
+                        <Route exact path="/authors/create" component={AuthorForm} />
+                        <Route exact path="/authors/:id/edit" component={AuthorForm} />
+                        <Route exact path="/users" component={ListUsers} />
+                        <Route exact path="/users/create" component={UserForm} />
+                        <Route exact path="/users/:id/edit" component={UserForm} />
                     </Switch>
                 </div>
             </div>

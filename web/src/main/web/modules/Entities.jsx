@@ -38,8 +38,6 @@ function authorsString( authors ) {
 class GenericForm extends React.Component {
     constructor( props ) {
         super( props );
-
-        this.id = this.props.id;
     }
 
     stateToData( data ) {
@@ -54,6 +52,7 @@ class GenericForm extends React.Component {
         event.preventDefault();
 
         var data = this.stateToData( Object.assign( {}, this.state ) );
+        delete data.loaded;
 
         let promise;
         if ( this.id )
@@ -74,15 +73,48 @@ class GenericForm extends React.Component {
         } );
     }
 
-    componentDidMount() {
+    populate() {
         if ( this.id ) {
             apiGet( `${this.endpoint}/${this.id}` )
-                .then( entity => { this.setState( this.stateFromData( entity ) ) } )
-                .catch( function( res ) { console.log( res ) } );
+                .then( entity => {
+                    if ( this.mounted ) {
+                        this.setState( this.stateFromData( entity ) );
+                        this.setState( { loaded: true } );
+                    }
+                } )
+                .catch( res => {
+                    if ( this.mounted )
+                        this.setState( { error: res } );
+                } );
+        }
+    }
+
+    componentDidMount() {
+        this.id = this.props.match.params.id;
+        this.setState( { loaded: false } );
+        this.initialState = Object.assign( {}, this.state );
+        this.endpoint = `${this.entityName}s`;
+        this.mounted = true;
+        this.populate();
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    componentWillReceiveProps( newProps ) {
+        if ( this.id !== newProps.match.params.id ) {
+            this.id = newProps.match.params.id;
+            this.setState( this.initialState );
+            this.populate();
         }
     }
 
     render() {
+        if ( this.state.error )
+            return <div>Error: {this.state.error}</div>;
+        if ( this.id && !this.state.loaded )
+            return <div>Loading</div>;
         let action = this.id ? "Edit" : "Create";
         return (
             <div className="panel">
@@ -96,11 +128,10 @@ class GenericForm extends React.Component {
     }
 }
 
-class AuthorForm extends GenericForm {
+export class AuthorForm extends GenericForm {
     constructor( props ) {
         super( props );
         this.state = { name: "", surname: "" };
-        this.endpoint = "authors";
         this.entityName = "author";
     }
 
@@ -114,23 +145,28 @@ class AuthorForm extends GenericForm {
     }
 }
 
-export class CreateAuthor extends React.Component {
-    render() {
-        return <AuthorForm />;
+export class UserForm extends GenericForm {
+    constructor( props ) {
+        super( props );
+        this.state = { name: "", surname: "", email: "" };
+        this.entityName = "user";
+    }
+
+    renderForm() {
+        return (
+            <div>
+                <Input type="text" value={this.state.name} onChange={this.handleInputChange} name="name" label="Name" />
+                <Input type="text" value={this.state.surname} onChange={this.handleInputChange} name="surname" label="Surname" />
+                <Input type="text" value={this.state.email} onChange={this.handleInputChange} name="email" label="Email" />
+            </div>
+        );
     }
 }
 
-export class EditAuthor extends React.Component {
-    render() {
-        return <AuthorForm id={this.props.match.params.id} />;
-    }
-}
-
-class BookForm extends GenericForm {
+export class BookForm extends GenericForm {
     constructor( props ) {
         super( props );
         this.state = { title: "", isbn: "", authors: [] };
-        this.endpoint = "books";
         this.entityName = "book";
     }
 
@@ -171,18 +207,6 @@ class BookForm extends GenericForm {
                     name="authors" label="Authors" />
             </div>
         );
-    }
-}
-
-export class CreateBook extends React.Component {
-    render() {
-        return <BookForm />;
-    }
-}
-
-export class EditBook extends React.Component {
-    render() {
-        return <BookForm id={this.props.match.params.id} />;
     }
 }
 
@@ -239,6 +263,10 @@ export function ListBooks() {
 
 export function ListAuthors() {
     return <ListView endpoint="authors" title="All authors" renderObject={authorString} />;
+}
+
+export function ListUsers() {
+    return <ListView endpoint="users" title="All users" renderObject={user => `${user.name} ${user.surname} (${user.email})`} />;
 }
 
 class GenericDetail extends React.Component {
