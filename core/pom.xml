@@ -52,6 +52,6 @@
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
   <build>
-    <defaultGoal>package wildfly:run</defaultGoal>
+    <defaultGoal>package wildfly:deploy</defaultGoal>
   </build>
 </project>
