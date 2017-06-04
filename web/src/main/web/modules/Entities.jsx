@@ -163,10 +163,68 @@ export class UserForm extends GenericForm {
     }
 }
 
+class Volumes extends React.Component {
+    constructor( props ) {
+        super( props );
+        this.state = { volumes: [] };
+        this.index = 0;
+    }
+
+    propagateState() {
+        if ( this.props.onChange ) {
+            let value = this.state.volumes
+                .filter( volume => volume.barcodeId )
+                .map( volume => ( { barcodeId: volume.barcodeId } ) );
+            this.props.onChange( value );
+        }
+    }
+
+    handleAddVolume = () => {
+        this.setState( prevState => ( { volumes: [...prevState.volumes, { index: this.index++, barcodeId: "" }] } ) );
+        this.propagateState();
+    }
+
+    handleVolumeChange( index ) {
+        return event => {
+            let barcodeId = event.target.value;
+            this.setState( prevState => (
+                { volumes: prevState.volumes.map( volume => ( volume.index === index ) ? { index: volume.index, barcodeId: barcodeId } : volume ) }
+            ) );
+            this.propagateState();
+        }
+    }
+
+    render() {
+        return (
+            <div className="panel panel-default">
+                <div className="panel-heading">Volumes</div>
+                <div className="panel-body">
+                    {
+                        this.state.volumes.map( volume =>
+                            <div className="row form-group" key={volume.index}>
+                                <div className="col-xs-2">
+                                    <label>Barcode ID</label>
+                                </div>
+                                <div className="col-xs-3">
+                                    <input className="form-control" size="60" type="text" value={volume.barcodeId}
+                                        onChange={this.handleVolumeChange( volume.index )} />
+                                </div>
+                            </div>
+                        )
+                    }
+                    <div className="form-group">
+                        <button type="button" className="btn btn-default" onClick={this.handleAddVolume}>Add volume</button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
 export class BookForm extends GenericForm {
     constructor( props ) {
         super( props );
-        this.state = { title: "", isbn: "", authors: [] };
+        this.state = { title: "", isbn: "", authors: [], volumes: [] };
         this.entityName = "book";
     }
 
@@ -195,6 +253,27 @@ export class BookForm extends GenericForm {
                     options: authors.map( this.authorValue )
                 };
             } );
+    }
+
+    renderForm() {
+        return (
+            <div>
+                <Input type="text" value={this.state.title} onChange={this.handleInputChange} name="title" label="Title" />
+                <Input type="text" value={this.state.isbn} onChange={this.handleInputChange} name="isbn" label="ISBN" />
+                <Select multi onChange={this.handleAuthorsChange}
+                    loadOptions={this.getAuthors} value={this.state.authors}
+                    name="authors" label="Authors" />
+                <Volumes onChange={( volumes ) => this.setState( { volumes: volumes } )} />
+            </div>
+        );
+    }
+}
+
+export class LoanForm extends GenericForm {
+    constructor( props ) {
+        super( props );
+        this.state = { volume: "", user: "" };
+        this.entityName = "book";
     }
 
     renderForm() {
