@@ -11,9 +11,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.validator.constraints.NotEmpty;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @XmlRootElement
@@ -39,9 +40,9 @@ public class Author implements Serializable {
     private Integer diedYear;
 
     @ManyToMany(mappedBy = "authors")
+    @JsonView(Author.class)
     private List<Book> books = new ArrayList<>();
 
-    @XmlTransient
     public List<Book> getBooks() {
         return books;
     }

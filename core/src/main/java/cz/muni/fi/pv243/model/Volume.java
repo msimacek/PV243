@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @Entity
 @XmlRootElement
 public class Volume implements Serializable {
@@ -26,6 +28,7 @@ public class Volume implements Serializable {
     private long barcodeId;
 
     @ManyToOne
+    @JsonView(Volume.class)
     private Book book;
 
     public Book getBook() {

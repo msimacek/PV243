@@ -12,15 +12,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.NotEmpty;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @XmlRootElement
 public class Book implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -59,9 +59,9 @@ public class Book implements Serializable {
     }
 
     @OneToMany(mappedBy = "book")
+    @JsonView(Book.class)
     private List<Volume> volumes = new ArrayList<>();
 
-    @XmlTransient
     public List<Volume> getVolumes() {
         return volumes;
     }

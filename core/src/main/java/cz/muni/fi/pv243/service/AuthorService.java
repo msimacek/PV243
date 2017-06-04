@@ -9,4 +9,13 @@ public class AuthorService extends AbstractService<Author> {
     public AuthorService() {
         super(Author.class);
     }
+
+    @Override
+    public Author findById(Object id) {
+        Author author = super.findById(id);
+        // force load
+        if (author != null && author.getBooks() != null)
+            author.getBooks().size();
+        return author;
+    }
 }

@@ -17,6 +17,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import cz.muni.fi.pv243.service.AbstractService;
 
 /**
@@ -29,6 +31,7 @@ public abstract class AbstractEndpoint<T> {
 
     @POST
     @Consumes("application/json")
+    @JsonView(DefaultView.class)
     public Response create(@Valid T entity) {
         if (entity == null) {
             return Response.status(Status.BAD_REQUEST).build();
@@ -52,6 +55,7 @@ public abstract class AbstractEndpoint<T> {
     @GET
     @Path("/{id:[0-9][0-9]*}")
     @Produces("application/json")
+    @JsonView(DefaultView.class)
     public Response findById(@PathParam("id") Long id) {
         T entity = service.findById(id);
         if (entity == null) {
@@ -62,6 +66,7 @@ public abstract class AbstractEndpoint<T> {
 
     @GET
     @Produces("application/json")
+    @JsonView(DefaultView.class)
     public List<T> listAll() {
         final List<T> results = service.findAll();
         return results;

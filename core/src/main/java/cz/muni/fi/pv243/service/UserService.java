@@ -9,4 +9,12 @@ public class UserService extends AbstractService<User> {
     public UserService() {
         super(User.class);
     }
+
+    @Override
+    public User findById(Object id) {
+        User user = super.findById(id);
+        if (user != null && user.getLoans() != null)
+            user.getLoans().size();
+        return user;
+    }
 }

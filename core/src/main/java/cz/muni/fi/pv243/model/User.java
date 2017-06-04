@@ -10,11 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @XmlRootElement
@@ -41,9 +42,9 @@ public class User implements Serializable {
 
     @Column
     @OneToMany(mappedBy = "user")
+    @JsonView(User.class)
     private List<Loan> loans = new ArrayList<>();
 
-    @XmlTransient
     public List<Loan> getLoans() {
         return loans;
     }
