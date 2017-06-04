@@ -2,6 +2,8 @@ package cz.muni.fi.pv243.test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -20,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import cz.muni.fi.pv243.model.Author;
 import cz.muni.fi.pv243.model.Book;
+import cz.muni.fi.pv243.model.Volume;
 import cz.muni.fi.pv243.rest.BookEndpoint;
 import cz.muni.fi.pv243.service.BookService;
 
@@ -68,5 +71,35 @@ public class RestTest {
         assertEquals("Book", outBook.getTitle());
         assertEquals(1, outBook.getAuthors().size());
         assertEquals("Foo", outBook.getAuthors().get(0).getName());
+    }
+
+    @Test
+    @RunAsClient
+    public void testCreateBookWithVolumes(@ArquillianResteasyResource("") WebTarget webTarget) throws Exception {
+        Volume volume = new Volume();
+        volume.setBarcodeId(123);
+        Book book = new Book();
+        book.setTitle("Book");
+        book.setISBN("1234");
+        book.getVolumes().add(volume);
+        Response bookResponse = webTarget
+                .path("books")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(book));
+        assertEquals(Response.Status.CREATED.getStatusCode(), bookResponse.getStatus());
+        Book outBook = bookResponse.readEntity(Book.class);
+        assertNotNull(outBook.getId());
+
+        bookResponse = webTarget
+                .path("books/" + outBook.getId())
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+        assertEquals(Response.Status.OK.getStatusCode(), bookResponse.getStatus());
+        outBook = bookResponse.readEntity(Book.class);
+        assertEquals("Book", outBook.getTitle());
+        List<Volume> volumes = outBook.getVolumes();
+        assertEquals(1, volumes.size());
+        Volume outVolume = volumes.get(0);
+        assertEquals(123, outVolume.getBarcodeId());
     }
 }
