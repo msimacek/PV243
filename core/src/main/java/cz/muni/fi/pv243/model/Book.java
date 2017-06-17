@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,7 +38,7 @@ public class Book implements Serializable {
     private String ISBN;
 
     @Column
-    private String desciption;
+    private String description;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Author> authors = new ArrayList<>();
@@ -58,7 +59,7 @@ public class Book implements Serializable {
         this.id = id;
     }
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade=CascadeType.ALL)
     @JsonView(Book.class)
     private List<Volume> volumes = new ArrayList<>();
 
@@ -111,12 +112,12 @@ public class Book implements Serializable {
         this.ISBN = ISBN;
     }
 
-    public String getDesciption() {
-        return desciption;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesciption(String desciption) {
-        this.desciption = desciption;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -126,8 +127,8 @@ public class Book implements Serializable {
             result += "title: " + title;
         if (ISBN != null && !ISBN.trim().isEmpty())
             result += ", ISBN: " + ISBN;
-        if (desciption != null && !desciption.trim().isEmpty())
-            result += ", desciption: " + desciption;
+        if (description != null && !description.trim().isEmpty())
+            result += ", description: " + description;
         return result;
     }
 }
