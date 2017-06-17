@@ -273,17 +273,28 @@ export class LoanForm extends GenericForm {
     constructor( props ) {
         super( props );
         this.state = { volume: "", user: "" };
-        this.entityName = "book";
+        this.entityName = "loan";
+    }
+
+    stateToData( state ) {
+        return {
+            volume: { barcodeId: state.volume },
+            user: { email: state.user },
+        };
+    }
+
+    dataToState( data ) {
+        return {
+            volume: data.volume.barcodeId,
+            user: data.user.email,
+        };
     }
 
     renderForm() {
         return (
             <div>
-                <Input type="text" value={this.state.title} onChange={this.handleInputChange} name="title" label="Title" />
-                <Input type="text" value={this.state.isbn} onChange={this.handleInputChange} name="isbn" label="ISBN" />
-                <Select multi onChange={this.handleAuthorsChange}
-                    loadOptions={this.getAuthors} value={this.state.authors}
-                    name="authors" label="Authors" />
+                <Input type="text" value={this.state.user} onChange={this.handleInputChange} name="user" label="User email" />
+                <Input type="text" value={this.state.volume} onChange={this.handleInputChange} name="volume" label="Volume barcode ID" />
             </div>
         );
     }
