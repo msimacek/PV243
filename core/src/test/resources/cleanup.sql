@@ -1,0 +1,6 @@
+DELETE FROM loan;
+DELETE FROM volume;
+DELETE FROM book_author;
+DELETE FROM book;
+DELETE FROM author;
+DELETE FROM user;

@@ -11,6 +11,7 @@ import javax.json.JsonObject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.persistence.CleanupUsingScript;
 import org.jboss.arquillian.persistence.ShouldMatchDataSet;
 import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -29,6 +30,7 @@ import cz.muni.fi.pv243.service.BookService;
 import io.restassured.response.Response;
 
 @RunWith(Arquillian.class)
+@CleanupUsingScript("cleanup.sql")
 public class RestTest {
     @ArquillianResource
     URL basePath;
@@ -60,7 +62,7 @@ public class RestTest {
     }
 
     @Test
-    @UsingDataSet("sample-author.yml")
+    @UsingDataSet("author.yml")
     public void testGetAuthorById() {
         getJson("authors/1")
                 .then()
@@ -70,7 +72,7 @@ public class RestTest {
     }
 
     @Test
-    @ShouldMatchDataSet(value = "sample-author.yml", excludeColumns = "author.id")
+    @ShouldMatchDataSet(value = "author.yml", excludeColumns = "id")
     public void testCreateAuthor() {
         JsonObject json = Json.createObjectBuilder()
                 .add("name", "William")
@@ -85,9 +87,8 @@ public class RestTest {
     }
 
     @Test
-    @UsingDataSet("sample-author.yml")
-    @ShouldMatchDataSet(value = { "sample-author.yml", "sample-book.yml" }, excludeColumns = { "book.id",
-            "book_author.books_id" })
+    @UsingDataSet("author.yml")
+    @ShouldMatchDataSet(value = { "author.yml", "book.yml" }, excludeColumns = { "id", "books_id" })
     public void testCreateBook() {
         JsonArray authors = Json.createArrayBuilder()
                 .add(Json.createObjectBuilder().add("id", 1).build())
