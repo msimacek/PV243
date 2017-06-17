@@ -1,0 +1,11 @@
+book:
+  - id: 1
+    title: Hamlet
+
+book_author:
+  - books_id: 1
+    authors_id: 1
+
+volume:
+  - barcodeId: 123456
+  - barcodeId: 789012

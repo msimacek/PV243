@@ -1,105 +1,110 @@
 package cz.muni.fi.pv243.test;
 
-import static org.junit.Assert.*;
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 
-import java.util.List;
+import java.net.URL;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.extension.rest.client.ArquillianResteasyResource;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.persistence.ShouldMatchDataSet;
+import org.jboss.arquillian.persistence.UsingDataSet;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import cz.muni.fi.pv243.model.Author;
 import cz.muni.fi.pv243.model.Book;
-import cz.muni.fi.pv243.model.Volume;
 import cz.muni.fi.pv243.rest.BookEndpoint;
 import cz.muni.fi.pv243.service.BookService;
+import io.restassured.response.Response;
 
 @RunWith(Arquillian.class)
 public class RestTest {
-    @Deployment(testable = false)
+    @ArquillianResource
+    URL basePath;
+
+    @Deployment
     public static Archive<?> createDeployment() {
+        PomEquippedResolveStage resolver = Maven.resolver().loadPomFromFile("pom.xml");
         return ShrinkWrap.create(WebArchive.class, "test.war")
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                 .addPackage(Book.class.getPackage())
                 .addPackage(BookService.class.getPackage())
                 .addPackage(BookEndpoint.class.getPackage())
+                .addAsLibraries(resolver.resolve("io.rest-assured:rest-assured").withTransitivity().asFile())
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
-    @Test
-    @RunAsClient
-    public void testCreateBookWithAuthor(@ArquillianResteasyResource("") WebTarget webTarget) throws Exception {
-        Author author = new Author();
-        author.setName("Foo");
-        author.setSurname("Bar");
-        Response authorResponse = webTarget
-                .path("authors")
-                .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(author));
-        assertEquals(Response.Status.CREATED.getStatusCode(), authorResponse.getStatus());
-        Author outAuthor = authorResponse.readEntity(Author.class);
-        Book book = new Book();
-        book.setTitle("Book");
-        book.setISBN("1234");
-        book.getAuthors().add(outAuthor);
-        Response bookResponse = webTarget
-                .path("books")
-                .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(book));
-        assertEquals(Response.Status.CREATED.getStatusCode(), bookResponse.getStatus());
-        Book outBook = bookResponse.readEntity(Book.class);
-        assertNotNull(outBook.getId());
+    private Response getJson(String endpoint) {
+        return given()
+                .accept("application/json")
+                .get(basePath + endpoint);
+    }
 
-        bookResponse = webTarget
-                .path("books/" + outBook.getId())
-                .request(MediaType.APPLICATION_JSON)
-                .get();
-        assertEquals(Response.Status.OK.getStatusCode(), bookResponse.getStatus());
-        outBook = bookResponse.readEntity(Book.class);
-        assertEquals("Book", outBook.getTitle());
-        assertEquals(1, outBook.getAuthors().size());
-        assertEquals("Foo", outBook.getAuthors().get(0).getName());
+    private Response postJson(String endpoint, JsonObject json) {
+        return given()
+                .accept("application/json")
+                .contentType("application/json")
+                .body(json.toString())
+                .post(basePath + endpoint);
     }
 
     @Test
-    @RunAsClient
-    public void testCreateBookWithVolumes(@ArquillianResteasyResource("") WebTarget webTarget) throws Exception {
-        Volume volume = new Volume();
-        volume.setBarcodeId(123);
-        Book book = new Book();
-        book.setTitle("Book");
-        book.setISBN("1234");
-        book.getVolumes().add(volume);
-        Response bookResponse = webTarget
-                .path("books")
-                .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(book));
-        assertEquals(Response.Status.CREATED.getStatusCode(), bookResponse.getStatus());
-        Book outBook = bookResponse.readEntity(Book.class);
-        assertNotNull(outBook.getId());
+    @UsingDataSet("sample-author.yml")
+    public void testGetAuthorById() {
+        getJson("authors/1")
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("William"))
+                .body("surname", equalTo("Shakespeare"));
+    }
 
-        bookResponse = webTarget
-                .path("books/" + outBook.getId())
-                .request(MediaType.APPLICATION_JSON)
-                .get();
-        assertEquals(Response.Status.OK.getStatusCode(), bookResponse.getStatus());
-        outBook = bookResponse.readEntity(Book.class);
-        assertEquals("Book", outBook.getTitle());
-        List<Volume> volumes = outBook.getVolumes();
-        assertEquals(1, volumes.size());
-        Volume outVolume = volumes.get(0);
-        assertEquals(123, outVolume.getBarcodeId());
+    @Test
+    @ShouldMatchDataSet(value = "sample-author.yml", excludeColumns = "author.id")
+    public void testCreateAuthor() {
+        JsonObject json = Json.createObjectBuilder()
+                .add("name", "William")
+                .add("surname", "Shakespeare")
+                .add("bornYear", 1820)
+                .add("diedYear", 1860)
+                .build();
+        postJson("authors", json)
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue());
+    }
+
+    @Test
+    @UsingDataSet("sample-author.yml")
+    @ShouldMatchDataSet(value = { "sample-author.yml", "sample-book.yml" }, excludeColumns = { "book.id",
+            "book_author.books_id" })
+    public void testCreateBook() {
+        JsonArray authors = Json.createArrayBuilder()
+                .add(Json.createObjectBuilder().add("id", 1).build())
+                .build();
+        JsonArray volumes = Json.createArrayBuilder()
+                .add(Json.createObjectBuilder().add("barcodeId", 123456).build())
+                .add(Json.createObjectBuilder().add("barcodeId", 789012).build())
+                .build();
+        JsonObject book = Json.createObjectBuilder()
+                .add("title", "Hamlet")
+                .add("isbn", "1234-5678")
+                .add("authors", authors)
+                .add("volumes", volumes)
+                .build();
+        postJson("books", book)
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue());
     }
 }
