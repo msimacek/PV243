@@ -75,12 +75,25 @@ public class RestTest {
                 .statusCode(200);
     }
 
+    private ValidatableResponse testDelete(String endpoint) {
+        return delete(basePath + endpoint)
+                .then()
+                .statusCode(204);
+    }
+
     @Test
     @UsingDataSet("author.yml")
     public void testGetAuthorById() {
         testFind("authors/1")
                 .body("name", equalTo("William"))
                 .body("surname", equalTo("Shakespeare"));
+    }
+
+    @Test
+    @UsingDataSet("author.yml")
+    public void testGetAllAuthors() {
+        testFind("authors")
+                .body("surname", contains("Shakespeare"));
     }
 
     @Test
@@ -93,6 +106,25 @@ public class RestTest {
                 .add("diedYear", 1860)
                 .build();
         testCreate("authors", author);
+    }
+
+    @Test
+    @UsingDataSet("author.yml")
+    @ShouldMatchDataSet("empty.yml")
+    public void testDeleteAuthor() {
+        testDelete("authors/1");
+    }
+
+    @Test
+    @UsingDataSet({ "author.yml", "book.yml" })
+    public void testGetBookById() {
+        testFind("books/1")
+                .body("id", equalTo(1))
+                .body("title", equalTo("Hamlet"))
+                .body("isbn", equalTo("1234-5678"))
+                .body("authors.id", contains(1))
+                .body("authors.surname", contains("Shakespeare"))
+                .body("volumes.barcodeId", containsInAnyOrder(789012, 123456));
     }
 
     @Test
@@ -116,6 +148,13 @@ public class RestTest {
     }
 
     @Test
+    @UsingDataSet({ "author.yml", "book.yml" })
+    @ShouldMatchDataSet({ "author.yml", "empty.yml" })
+    public void testDeleteBook() {
+        testDelete("books/1");
+    }
+
+    @Test
     @ShouldMatchDataSet(value = "user.yml", excludeColumns = "id")
     public void testCreateUser() {
         JsonObject user = Json.createObjectBuilder()
@@ -128,9 +167,23 @@ public class RestTest {
 
     @Test
     @UsingDataSet("user.yml")
+    public void testFindUserById() {
+        testFind("users/1")
+                .body("email", equalTo("derp@derp.me"));
+    }
+
+    @Test
+    @UsingDataSet("user.yml")
     public void testFindUserByEmail() {
         testFind("users/email/derp@derp.me")
                 .body("id", equalTo(1));
+    }
+
+    @Test
+    @UsingDataSet("user.yml")
+    @ShouldMatchDataSet("empty.yml")
+    public void testDeleteUser() {
+        testDelete("users/1");
     }
 
     @Test
@@ -141,5 +194,12 @@ public class RestTest {
                 .add("volume", Json.createObjectBuilder().add("barcodeId", 789012))
                 .build();
         testCreate("loans", loan);
+    }
+
+    @Test
+    @UsingDataSet({ "user.yml", "author.yml", "book.yml", "loan.yml" })
+    @ShouldMatchDataSet({ "user.yml", "author.yml", "book.yml", "empty.yml" })
+    public void testDeleteLoan() {
+        testDelete("loans/1");
     }
 }

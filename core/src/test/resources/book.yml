@@ -9,6 +9,8 @@ book_author:
 
 volume:
   - id: 1
+    book_id: 1
     barcodeId: 123456
   - id: 2
+    book_id: 1
     barcodeId: 789012
