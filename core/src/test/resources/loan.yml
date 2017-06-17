@@ -1,0 +1,4 @@
+loan:
+  - user_id: 1
+    volume_id: 2
+    loanDate: "2017-06-17"

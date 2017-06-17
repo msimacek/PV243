@@ -23,7 +23,6 @@ public class Loan implements Serializable {
     private Long id;
 
     @Column(nullable = false)
-    @NotNull
     private Date loanDate;
 
     @Column

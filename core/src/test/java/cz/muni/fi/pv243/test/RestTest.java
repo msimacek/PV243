@@ -28,6 +28,7 @@ import cz.muni.fi.pv243.model.Book;
 import cz.muni.fi.pv243.rest.BookEndpoint;
 import cz.muni.fi.pv243.service.BookService;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 
 @RunWith(Arquillian.class)
 @CleanupUsingScript("cleanup.sql")
@@ -61,12 +62,23 @@ public class RestTest {
                 .post(basePath + endpoint);
     }
 
+    private ValidatableResponse testCreate(String endpoint, JsonObject json) {
+        return postJson(endpoint, json)
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue());
+    }
+
+    private ValidatableResponse testFind(String endpoint) {
+        return getJson(endpoint)
+                .then()
+                .statusCode(200);
+    }
+
     @Test
     @UsingDataSet("author.yml")
     public void testGetAuthorById() {
-        getJson("authors/1")
-                .then()
-                .statusCode(200)
+        testFind("authors/1")
                 .body("name", equalTo("William"))
                 .body("surname", equalTo("Shakespeare"));
     }
@@ -74,16 +86,13 @@ public class RestTest {
     @Test
     @ShouldMatchDataSet(value = "author.yml", excludeColumns = "id")
     public void testCreateAuthor() {
-        JsonObject json = Json.createObjectBuilder()
+        JsonObject author = Json.createObjectBuilder()
                 .add("name", "William")
                 .add("surname", "Shakespeare")
                 .add("bornYear", 1820)
                 .add("diedYear", 1860)
                 .build();
-        postJson("authors", json)
-                .then()
-                .statusCode(201)
-                .body("id", notNullValue());
+        testCreate("authors", author);
     }
 
     @Test
@@ -103,9 +112,34 @@ public class RestTest {
                 .add("authors", authors)
                 .add("volumes", volumes)
                 .build();
-        postJson("books", book)
-                .then()
-                .statusCode(201)
-                .body("id", notNullValue());
+        testCreate("books", book);
+    }
+
+    @Test
+    @ShouldMatchDataSet(value = "user.yml", excludeColumns = "id")
+    public void testCreateUser() {
+        JsonObject user = Json.createObjectBuilder()
+                .add("name", "Derp")
+                .add("surname", "Derpington")
+                .add("email", "derp@derp.me")
+                .build();
+        testCreate("users", user);
+    }
+
+    @Test
+    @UsingDataSet("user.yml")
+    public void testFindUserByEmail() {
+        testFind("users/email/derp@derp.me")
+                .body("id", equalTo(1));
+    }
+
+    @Test
+    @UsingDataSet({ "user.yml", "author.yml", "book.yml" })
+    public void testCreateLoan() {
+        JsonObject loan = Json.createObjectBuilder()
+                .add("user", Json.createObjectBuilder().add("email", "derp@derp.me"))
+                .add("volume", Json.createObjectBuilder().add("barcodeId", 789012))
+                .build();
+        testCreate("loans", loan);
     }
 }

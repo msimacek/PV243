@@ -14,7 +14,7 @@ public abstract class AbstractService<T> {
     private Class<T> clazz;
 
     @PersistenceContext(unitName = "pv243-persistence-unit")
-    private EntityManager em;
+    protected EntityManager em;
 
     public AbstractService(Class<T> clazz) {
         this.clazz = clazz;

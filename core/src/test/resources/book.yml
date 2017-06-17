@@ -1,5 +1,6 @@
 book:
   - id: 1
+    isbn: "1234-5678"
     title: Hamlet
 
 book_author:
@@ -7,5 +8,7 @@ book_author:
     authors_id: 1
 
 volume:
-  - barcodeId: 123456
-  - barcodeId: 789012
+  - id: 1
+    barcodeId: 123456
+  - id: 2
+    barcodeId: 789012
