@@ -31,6 +31,7 @@ public abstract class AbstractEndpoint<T> {
 
     @POST
     @Consumes("application/json")
+    @Produces("application/json")
     @JsonView(DefaultView.class)
     public Response create(@Valid T entity) {
         if (entity == null) {
@@ -75,6 +76,7 @@ public abstract class AbstractEndpoint<T> {
     @PUT
     @Path("/{id:[0-9][0-9]*}")
     @Consumes("application/json")
+    @Produces("application/json")
     public Response update(@PathParam("id") Long id, T entity) {
         if (entity == null) {
             return Response.status(Status.BAD_REQUEST).build();

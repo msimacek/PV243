@@ -59,8 +59,19 @@ class GenericForm extends React.Component {
             promise = apiPut( `${this.endpoint}/${this.id}`, data );
         else
             promise = apiPost( this.endpoint, data );
-        promise.then(() => this.props.history.push( `/${this.endpoint}` ) )
-            .catch( function( res ) { console.log( res ) } );
+        promise.then(( response ) => {
+            if ( response.ok ) {
+                this.props.history.push( `/${this.endpoint}` );
+            } else {
+                return response.json().then( json => {
+                    var message = json.parameterViolations.map( v => `${v.path.replace( /.*\./, '' )} ${v.message}` ).join( ', ' );
+                    this.setState( { validationErrors: message } );
+                } );
+            }
+        } )
+            .catch( error => {
+
+            } );
     }
 
     handleInputChange = ( event ) => {
@@ -119,6 +130,10 @@ class GenericForm extends React.Component {
         return (
             <div className="panel">
                 <h2>{action} {this.entityName}</h2>
+                {this.state.validationErrors &&
+                    <div className="alert alert-danger">
+                        {this.state.validationErrors}
+                    </div>}
                 <form onSubmit={this.handleSubmit}>
                     {this.renderForm()}
                     <button type="submit" className="btn btn-primary">{action}</button>
