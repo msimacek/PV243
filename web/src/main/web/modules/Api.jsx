@@ -21,12 +21,12 @@ export function apiGet( endpoint ) {
 export function tryLoginFromCookie() {
     var email = Cookies.get( "email" );
     var password = Cookies.get( "password" );
-    var role = Cookies.get( "role" );
-    if ( email && password && role ) {
+    var user = Cookies.get( "user" );
+    if ( email && password && user ) {
         credentials = {
             email: email,
             password: password,
-            role: role,
+            user: JSON.parse(user),
         }
     }
 }
@@ -42,11 +42,11 @@ export function logIn( email, password ) {
                 return response.json().then( user => {
                     credentials.email = email;
                     credentials.password = password;
-                    credentials.role = user.role;
+                    credentials.user = user;
 
                     Cookies.set( "email", email );
                     Cookies.set( "password", password );
-                    Cookies.set( "role", user.role );
+                    Cookies.set( "user", JSON.stringify(user) );
                 } );
             }
             throw new Error( response.statusText );
@@ -57,6 +57,7 @@ export function logOut() {
     credentials = {};
     Cookies.remove( "email" );
     Cookies.remove( "password" );
+    Cookies.remove( "user" );
 }
 
 export function apiPost( endpoint, data ) {

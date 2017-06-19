@@ -74,36 +74,37 @@ class Base extends React.Component {
         super( props );
         tryLoginFromCookie();
         this.state = {
-            email: credentials.email,
-            role: credentials.role,
+            user: credentials.user,
         };
     }
 
     handleLogin = () => {
         this.setState( {
-            email: credentials.email,
-            role: credentials.role,
+            user: credentials.user,
         } );
         this.props.history.push( "/" );
     }
 
     handleLogout = () => {
         logOut();
-        this.setState( { email: null, role: null } );
+        this.setState( { user: null } );
         this.props.history.push( "/" );
     }
 
     render() {
         return (
             <div>
-                <NavBar canCreate={this.state.role == "admin"} />
+                <NavBar canCreate={this.state.user && this.state.user.role == "admin"} />
                 <nav className="navbar container">
                     <ul className="nav navbar-nav">
-                        {this.state.email && <li className="nav-item"><span className="navbar-text">Logged in as {this.state.email}</span></li>}
-                        {this.state.email ?
+                        {this.state.user &&
+                            <li className="nav-item"><span className="navbar-text">Logged in as {this.state.user.email}</span></li>}
+                        {this.state.user ?
                             <li className="nav-item"><a onClick={this.handleLogout} href="#">Log out</a></li>
                             : <NavItem to="/login">Log in</NavItem>
                         }
+                        {this.state.user &&
+                            <li className="nav-item"><Link to={`/users/${this.state.user.id}`}>User profile</Link></li>}
                     </ul>
                 </nav>
                 <div className="container">

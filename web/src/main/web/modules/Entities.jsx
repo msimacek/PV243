@@ -26,7 +26,12 @@ function Select( { label, ...rest } ) {
 }
 
 function authorString( author ) {
-    return `${author.name} ${author.surname}`;
+    let str = `${author.name} ${author.surname}`;
+    if (author.diedYear)
+        str += ` (${author.bornYear}-${author.diedYear})`;
+    else if (author.bornYear)
+        str += ` (${author.bornYear}`;
+    return str;
 }
 
 function authorsString( authors ) {
@@ -39,6 +44,7 @@ class GenericForm extends React.Component {
     constructor( props ) {
         super( props );
         this.action = null;
+        this.redirect = null;
     }
 
     stateToData( data ) {
@@ -63,7 +69,7 @@ class GenericForm extends React.Component {
             promise = apiPost( this.endpoint, data );
         promise.then(( response ) => {
             if ( response.ok ) {
-                this.props.history.push( `/${this.endpoint}` );
+                this.props.history.push( this.redirect || `/${this.endpoint}` );
             } else {
                 return response.json().then( json => {
                     if ( json.parameterViolations ) {
@@ -155,6 +161,7 @@ export class AuthorForm extends GenericForm {
         super( props );
         this.state = { name: "", surname: "" };
         this.entityName = "author";
+        this.redirect = "/authors";
     }
 
     renderForm() {
@@ -162,6 +169,8 @@ export class AuthorForm extends GenericForm {
             <div>
                 <Input type="text" value={this.state.name} onChange={this.handleInputChange} name="name" label="Name" />
                 <Input type="text" value={this.state.surname} onChange={this.handleInputChange} name="surname" label="Surname" />
+                <Input type="text" value={this.state.bornYear} onChange={this.handleInputChange} name="bornYear" label="Year of birth" />
+                <Input type="text" value={this.state.diedYear} onChange={this.handleInputChange} name="diedYear" label="Year of death" />
             </div>
         );
     }
@@ -390,7 +399,7 @@ class ListView extends React.Component {
 }
 
 export function ListBooks() {
-    return <ListView endpoint="books" title="All books" renderObject={book => `${book.title} (${authorsString( book.authors )})`} />;
+    return <ListView endpoint="books" title="All books" renderObject={book => `${book.title} - ${authorsString( book.authors )}`} />;
 }
 
 export function ListAuthors() {
@@ -405,7 +414,7 @@ class GenericDetail extends React.Component {
     constructor( props ) {
         super( props );
         this.state = { loaded: false };
-        this.id = this.props.match.params.id;
+        this.id = this.props.id || this.props.match.params.id;
     }
 
     componentDidMount() {
