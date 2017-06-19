@@ -2,7 +2,10 @@ import React from 'react'
 import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom'
 import '../style.css'
 import 'react-select/dist/react-select.css'
-import { BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors, UserForm, ListUsers, UserDetail, LoanForm } from './Entities'
+import {
+    BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors,
+    UserForm, ListUsers, UserDetail, LoanForm, ReturnForm,
+} from './Entities'
 import { logIn, logOut, tryLoginFromCookie, credentials } from './Api'
 
 class NavItem extends React.Component {
@@ -30,6 +33,7 @@ class NavBar extends React.Component {
                     <NavItem to="/users">List users</NavItem>
                     {this.props.canCreate && <NavItem to="/users/create">Create user</NavItem>}
                     {this.props.canCreate && <NavItem to="/loans/create">Create loan</NavItem>}
+                    {this.props.canCreate && <NavItem to="/return">Return books</NavItem>}
                 </ul>
             </nav>
         );
@@ -118,6 +122,7 @@ class Base extends React.Component {
                         <Route exact path="/loans/create" component={LoanForm} />
                         <Route exact path="/users/:id" component={UserDetail} />
                         <Route exact path="/users/:id/edit" component={UserForm} />
+                        <Route exact path="/return" component={ReturnForm} />
                     </Switch>
                 </div>
             </div>

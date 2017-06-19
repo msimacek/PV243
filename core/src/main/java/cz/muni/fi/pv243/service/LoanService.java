@@ -34,6 +34,10 @@ public class LoanService extends AbstractService<Loan> {
         Volume volume = volumeService.findByBarcode(loan.getVolume().getBarcodeId());
         if (volume == null)
             throw new ServiceException("Volume not found");
+        for (Loan existing : volume.getLoans()) {
+            if (existing.getReturnDate() == null)
+                throw new ServiceException("Volume already lent");
+        }
         loan.setVolume(volume);
     }
 

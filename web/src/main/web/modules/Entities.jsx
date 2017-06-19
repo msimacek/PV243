@@ -38,6 +38,7 @@ function authorsString( authors ) {
 class GenericForm extends React.Component {
     constructor( props ) {
         super( props );
+        this.action = null;
     }
 
     stateToData( data ) {
@@ -53,6 +54,7 @@ class GenericForm extends React.Component {
 
         var data = this.stateToData( Object.assign( {}, this.state ) );
         delete data.loaded;
+        delete data.validationErrors;
 
         let promise;
         if ( this.id )
@@ -64,7 +66,11 @@ class GenericForm extends React.Component {
                 this.props.history.push( `/${this.endpoint}` );
             } else {
                 return response.json().then( json => {
-                    var message = json.parameterViolations.map( v => `${v.path.replace( /.*\./, '' )} ${v.message}` ).join( ', ' );
+                    if ( json.parameterViolations ) {
+                        var message = json.parameterViolations.map( v => `${v.path.replace( /.*\./, '' )} ${v.message}` ).join( ', ' );
+                    } else {
+                        var message = json.error;
+                    }
                     this.setState( { validationErrors: message } );
                 } );
             }
@@ -104,7 +110,8 @@ class GenericForm extends React.Component {
         this.id = this.props.match.params.id;
         this.setState( { loaded: false } );
         this.initialState = Object.assign( {}, this.state );
-        this.endpoint = `${this.entityName}s`;
+        if ( !this.endpoint )
+            this.endpoint = `${this.entityName}s`;
         this.mounted = true;
         this.populate();
     }
@@ -126,7 +133,7 @@ class GenericForm extends React.Component {
             return <div>Error: {this.state.error}</div>;
         if ( this.id && !this.state.loaded )
             return <div>Loading</div>;
-        let action = this.id ? "Edit" : "Create";
+        let action = this.action || ( this.id ? "Edit" : "Create" );
         return (
             <div className="panel">
                 <h2>{action} {this.entityName}</h2>
@@ -163,7 +170,7 @@ export class AuthorForm extends GenericForm {
 export class UserForm extends GenericForm {
     constructor( props ) {
         super( props );
-        this.state = { name: "", surname: "", email: "" };
+        this.state = { name: "", surname: "", email: "", password: "", role: "user" };
         this.entityName = "user";
     }
 
@@ -173,6 +180,8 @@ export class UserForm extends GenericForm {
                 <Input type="text" value={this.state.name} onChange={this.handleInputChange} name="name" label="Name" />
                 <Input type="text" value={this.state.surname} onChange={this.handleInputChange} name="surname" label="Surname" />
                 <Input type="text" value={this.state.email} onChange={this.handleInputChange} name="email" label="Email" />
+                <Input type="password" value={this.state.password} onChange={this.handleInputChange} name="password" label="Password" />
+                <Input type="text" value={this.state.role} onChange={this.handleInputChange} name="role" label="Role" />
             </div>
         );
     }
@@ -315,6 +324,24 @@ export class LoanForm extends GenericForm {
     }
 }
 
+export class ReturnForm extends GenericForm {
+    constructor( props ) {
+        super( props );
+        this.state = { barcodeId: "" };
+        this.entityName = "volume";
+        this.action = "Return";
+        this.endpoint = "/volumes/return"
+    }
+
+    renderForm() {
+        return (
+            <div>
+                <Input type="text" value={this.state.barcodeId} onChange={this.handleInputChange} name="barcodeId" label="Volume barcode ID" />
+            </div>
+        );
+    }
+}
+
 class ListView extends React.Component {
     constructor( props ) {
         super( props );
@@ -421,9 +448,22 @@ export class BookDetail extends GenericDetail {
                 <div className="panel panel-default">
                     <div className="panel-heading">Volumes</div>
                     <div className="panel-body">
-                        {this.state.volumes.map( volume =>
-                            <div>{volume.lent ? "Available" : "Lent"} {volume.barcodeId}</div>
-                        )}
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>State</th>
+                                    <th>Barcode ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.volumes.map( volume =>
+                                    <tr>
+                                        <td>{( volume.lent === false ) ? "Available" : "Lent"}</td>
+                                        <td>{volume.barcodeId}</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

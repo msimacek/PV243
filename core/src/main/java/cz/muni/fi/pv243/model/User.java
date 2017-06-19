@@ -47,6 +47,7 @@ public class User implements Serializable {
     private String email;
 
     @Column(nullable = false)
+    @NotEmpty
     private String password;
 
     @JsonIgnore
