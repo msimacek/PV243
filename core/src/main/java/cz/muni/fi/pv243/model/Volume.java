@@ -1,6 +1,8 @@
 package cz.muni.fi.pv243.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Min;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,8 +34,28 @@ public class Volume implements Serializable {
     @JsonView(Volume.class)
     private Book book;
 
+    @OneToMany(mappedBy = "volume")
+    @JsonView(Volume.class)
+    private List<Loan> loans = new ArrayList<>();
+
+    public boolean isLent() {
+        for (Loan loan : loans) {
+            if (loan.getReturnDate() == null)
+                return true;
+        }
+        return false;
+    }
+
     public Book getBook() {
         return book;
+    }
+
+    public List<Loan> getLoans() {
+        return loans;
+    }
+
+    public void setLoans(List<Loan> loans) {
+        this.loans = loans;
     }
 
     public void setBook(Book book) {

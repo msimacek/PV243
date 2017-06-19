@@ -378,7 +378,7 @@ class GenericDetail extends React.Component {
         if ( !this.state.loaded )
             return <div>Loading</div>;
         return (
-            <div className="panel">
+            <div>
                 <h2>{this.entityName} detail - {this.state.title}</h2>
                 <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>
                 {this.renderDetail()}
@@ -396,12 +396,22 @@ export class BookDetail extends GenericDetail {
 
     renderDetail() {
         return (
-            <dl className="dl-horizontal">
-                <dt>Title</dt><dd>{this.state.title}</dd>
-                <dt>Authors</dt><dd>{authorsString( this.state.authors )}</dd>
-                <dt>ISBN</dt><dd>{this.state.isbn}</dd>
-                <dt>Description</dt><dd>{this.state.description}</dd>
-            </dl>
+            <div>
+                <dl className="dl-horizontal">
+                    <dt>Title</dt><dd>{this.state.title}</dd>
+                    <dt>Authors</dt><dd>{authorsString( this.state.authors )}</dd>
+                    <dt>ISBN</dt><dd>{this.state.isbn}</dd>
+                    <dt>Description</dt><dd>{this.state.description}</dd>
+                </dl>
+                <div className="panel panel-default">
+                    <div className="panel-heading">Volumes</div>
+                    <div className="panel-body">
+                        {this.state.volumes.map( volume =>
+                            <div>{volume.lent ? "Available" : "Lent"} {volume.barcodeId}</div>
+                        )}
+                    </div>
+                </div>
+            </div>
         );
     }
 }

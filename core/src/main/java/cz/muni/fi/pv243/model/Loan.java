@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @Entity
 @XmlRootElement
 public class Loan implements Serializable {
@@ -28,9 +30,11 @@ public class Loan implements Serializable {
     private Date returnDate;
 
     @ManyToOne
+    @JsonView(Loan.class)
     private User user;
 
     @ManyToOne
+    @JsonView(Loan.class)
     private Volume volume;
 
     public Long getId() {

@@ -55,8 +55,10 @@ public class BookService extends AbstractService<Book> {
     public Book findById(Object id) {
         Book book = super.findById(id);
         // force load
-        if (book != null && book.getVolumes() != null)
+        if (book != null && book.getVolumes() != null) {
             book.getVolumes().size();
+            book.getVolumes().forEach((Volume volume) -> volume.getLoans().size());
+        }
         return book;
     }
 }
