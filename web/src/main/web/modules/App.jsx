@@ -5,6 +5,7 @@ import 'react-select/dist/react-select.css'
 import {
     BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors,
     UserForm, ListUsers, UserDetail, LoanForm, ReturnForm,
+    AuthorDetail,
 } from './Entities'
 import { logIn, logOut, tryLoginFromCookie, credentials } from './Api'
 
@@ -117,6 +118,7 @@ class Base extends React.Component {
                         <Route exact path="/books/:id/edit" component={( props ) => <BookForm user={this.state.user} {...props} />} />
                         <Route exact path="/authors" component={( props ) => <ListAuthors user={this.state.user} {...props} />} />
                         <Route exact path="/authors/create" component={( props ) => <AuthorForm user={this.state.user} {...props} />} />
+                        <Route exact path="/authors/:id" component={( props ) => <AuthorDetail user={this.state.user} {...props} />} />
                         <Route exact path="/authors/:id/edit" component={( props ) => <AuthorForm user={this.state.user} {...props} />} />
                         <Route exact path="/users" component={( props ) => <ListUsers user={this.state.user} {...props} />} />
                         <Route exact path="/users/create" component={( props ) => <UserForm user={this.state.user} {...props} />} />

@@ -547,3 +547,45 @@ export class UserDetail extends GenericDetail {
         );
     }
 }
+
+export class AuthorDetail extends GenericDetail {
+    constructor( props ) {
+        super( props );
+        this.endpoint = "authors";
+        this.entityName = "Author";
+    }
+
+    renderDetail() {
+        return (
+            <div>
+                <dl className="dl-horizontal">
+                    <dt>Name</dt><dd>{this.state.name}</dd>
+                    <dt>Surname</dt><dd>{this.state.surname}</dd>
+                    <dt>Date of birth</dt><dd>{this.state.bornYear}</dd>
+                    <dt>Date of death</dt><dd>{this.state.diedYear}</dd>
+                </dl>
+                <div className="panel panel-default">
+                    <div className="panel-heading">Books</div>
+                    <div className="panel-body">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.books.map( book =>
+                                    <tr key={book.id}>
+                                        <td>{book.title}</td>
+                                        <td>{book.description}</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
