@@ -23,14 +23,13 @@ class NavBar extends React.Component {
                     <a className="navbar-brand" href="#">Library manager</a>
                 </div>
                 <ul className="nav navbar-nav">
-                    <NavItem to="/login">Log in</NavItem>
                     <NavItem to="/books">List books</NavItem>
-                    <NavItem to="/books/create">Create book</NavItem>
+                    {this.props.canCreate && <NavItem to="/books/create">Create book</NavItem>}
                     <NavItem to="/authors">List authors</NavItem>
-                    <NavItem to="/authors/create">Create author</NavItem>
+                    {this.props.canCreate && <NavItem to="/authors/create">Create author</NavItem>}
                     <NavItem to="/users">List users</NavItem>
-                    <NavItem to="/users/create">Create user</NavItem>
-                    <NavItem to="/loans/create">Create loan</NavItem>
+                    {this.props.canCreate && <NavItem to="/users/create">Create user</NavItem>}
+                    {this.props.canCreate && <NavItem to="/loans/create">Create loan</NavItem>}
                 </ul>
             </nav>
         );
@@ -41,7 +40,7 @@ class Login extends React.Component {
     handleSubmit = ( event ) => {
         event.preventDefault();
         logIn( this.refs.email.value, this.refs.password.value )
-            .then(this.props.onLogin);
+            .then( this.props.onLogin );
     }
 
     render() {
@@ -70,29 +69,40 @@ class Base extends React.Component {
     constructor( props ) {
         super( props );
         tryLoginFromCookie();
-        this.state = { email: credentials.email };
+        this.state = {
+            email: credentials.email,
+            role: credentials.role,
+        };
     }
 
     handleLogin = () => {
-        this.setState( { email: credentials.email } );
+        this.setState( {
+            email: credentials.email,
+            role: credentials.role,
+        } );
         this.props.history.push( "/" );
     }
 
     handleLogout = () => {
         logOut();
-        this.setState( { email: null } );
+        this.setState( { email: null, role: null } );
         this.props.history.push( "/" );
     }
 
     render() {
         return (
             <div>
-                <NavBar />
+                <NavBar canCreate={this.state.role == "admin"} />
+                <nav className="navbar container">
+                    <ul className="nav navbar-nav">
+                        {this.state.email && <li className="nav-item"><span className="navbar-text">Logged in as {this.state.email}</span></li>}
+                        {this.state.email ?
+                            <li className="nav-item"><a onClick={this.handleLogout} href="#">Log out</a></li>
+                            : <NavItem to="/login">Log in</NavItem>
+                        }
+                    </ul>
+                </nav>
                 <div className="container">
-                    {this.state.email && <div>
-                        Logged in as {this.state.email}
-                        <button type="button" onClick={this.handleLogout}>Log out</button>
-                    </div>}
                     <Switch>
                         <Route exact path="/" component={ListBooks} />
                         <Route exact path="/login" component={( props ) => <Login onLogin={this.handleLogin} {...props} />} />
@@ -117,7 +127,7 @@ class Base extends React.Component {
 
 export default class App extends React.Component {
     render() {
-        var BaseComponent = withRouter(Base);
+        var BaseComponent = withRouter( Base );
         return (
             <BrowserRouter>
                 <BaseComponent />

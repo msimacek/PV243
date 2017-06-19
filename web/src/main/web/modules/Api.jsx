@@ -21,8 +21,13 @@ export function apiGet( endpoint ) {
 export function tryLoginFromCookie() {
     var email = Cookies.get( "email" );
     var password = Cookies.get( "password" );
-    if ( email && password ) {
-        credentials = { email: email, password: password };
+    var role = Cookies.get( "role" );
+    if ( email && password && role ) {
+        credentials = {
+            email: email,
+            password: password,
+            role: role,
+        }
     }
 }
 
@@ -34,13 +39,15 @@ export function logIn( email, password ) {
     return fetch( "/rest/profile", { headers: headers } )
         .then( response => {
             if ( response.ok ) {
-                credentials.email = email;
-                credentials.password = password;
+                return response.json().then( user => {
+                    credentials.email = email;
+                    credentials.password = password;
+                    credentials.role = user.role;
 
-                Cookies.set( "email", email );
-                Cookies.set( "password", password );
-
-                return response.json();
+                    Cookies.set( "email", email );
+                    Cookies.set( "password", password );
+                    Cookies.set( "role", user.role );
+                } );
             }
             throw new Error( response.statusText );
         } );
