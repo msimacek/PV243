@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom
 import '../style.css'
 import 'react-select/dist/react-select.css'
 import { BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors, UserForm, ListUsers, UserDetail, LoanForm } from './Entities'
-import { logIn, logOut, credentials } from './Api'
+import { logIn, logOut, tryLoginFromCookie, credentials } from './Api'
 
 class NavItem extends React.Component {
     render() {
@@ -69,7 +69,8 @@ class Login extends React.Component {
 class Base extends React.Component {
     constructor( props ) {
         super( props );
-        this.state = { email: null };
+        tryLoginFromCookie();
+        this.state = { email: credentials.email };
     }
 
     handleLogin = () => {

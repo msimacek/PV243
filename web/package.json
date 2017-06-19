@@ -18,6 +18,7 @@
   "homepage": "https://github.com/msimacek/PV243#readme",
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "js-cookie": "^2.1.4",
     "react": "^15.5.4",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.5.4",

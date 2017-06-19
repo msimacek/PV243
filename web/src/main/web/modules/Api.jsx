@@ -1,3 +1,5 @@
+import * as Cookies from "js-cookie";
+
 export var credentials = {};
 
 function setAuthHeader( headers ) {
@@ -16,6 +18,14 @@ export function apiGet( endpoint ) {
         } );
 }
 
+export function tryLoginFromCookie() {
+    var email = Cookies.get( "email" );
+    var password = Cookies.get( "password" );
+    if ( email && password ) {
+        credentials = { email: email, password: password };
+    }
+}
+
 export function logIn( email, password ) {
     var headers = {
         Authorization: 'Basic ' + btoa( email + ":" + password ),
@@ -27,6 +37,9 @@ export function logIn( email, password ) {
                 credentials.email = email;
                 credentials.password = password;
 
+                Cookies.set( "email", email );
+                Cookies.set( "password", password );
+
                 return response.json();
             }
             throw new Error( response.statusText );
@@ -35,6 +48,8 @@ export function logIn( email, password ) {
 
 export function logOut() {
     credentials = {};
+    Cookies.remove( "email" );
+    Cookies.remove( "password" );
 }
 
 export function apiPost( endpoint, data ) {
