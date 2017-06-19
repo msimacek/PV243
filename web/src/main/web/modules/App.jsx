@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom
 import '../style.css'
 import 'react-select/dist/react-select.css'
 import { BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors, UserForm, ListUsers, UserDetail, LoanForm } from './Entities'
+import { logIn } from './Api'
 
 class NavItem extends React.Component {
     render() {
@@ -22,6 +23,7 @@ class NavBar extends React.Component {
                     <a className="navbar-brand" href="#">Library manager</a>
                 </div>
                 <ul className="nav navbar-nav">
+                    <NavItem to="/login">Log in</NavItem>
                     <NavItem to="/books">List books</NavItem>
                     <NavItem to="/books/create">Create book</NavItem>
                     <NavItem to="/authors">List authors</NavItem>
@@ -35,6 +37,37 @@ class NavBar extends React.Component {
     }
 }
 
+class Login extends React.Component {
+    handleSubmit = ( event ) => {
+        event.preventDefault();
+        logIn(this.refs.email.value, this.refs.password.value,
+                () => {
+                    this.props.history.push("/");
+                });
+    }
+
+    render() {
+        return (
+            <div>
+                <h2>Log in </h2>
+                <form onSubmit={this.handleSubmit}>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" className="form-control" ref="email" />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input className="form-control" type="password" ref="password" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Log in</button>
+                    </div>
+                </form>
+            </div>
+        );
+    }
+}
+
 class Base extends React.Component {
     render() {
         return (
@@ -43,6 +76,7 @@ class Base extends React.Component {
                 <div className="container">
                     <Switch>
                         <Route exact path="/" component={ListBooks} />
+                        <Route exact path="/login" component={Login} />
                         <Route exact path="/books" component={ListBooks} />
                         <Route exact path="/books/create" component={BookForm} />
                         <Route exact path="/books/:id" component={BookDetail} />
