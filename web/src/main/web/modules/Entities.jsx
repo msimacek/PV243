@@ -27,9 +27,9 @@ function Select( { label, ...rest } ) {
 
 function authorString( author ) {
     let str = `${author.name} ${author.surname}`;
-    if (author.diedYear)
+    if ( author.diedYear )
         str += ` (${author.bornYear}-${author.diedYear})`;
-    else if (author.bornYear)
+    else if ( author.bornYear )
         str += ` (${author.bornYear}`;
     return str;
 }
@@ -38,6 +38,12 @@ function authorsString( authors ) {
     if ( !authors.length )
         return "unknown author";
     return authors.map( authorString ).join( ', ' );
+}
+
+function canEdit( role, entity ) {
+    if ( role == "admin" )
+        return true;
+    return false;
 }
 
 class GenericForm extends React.Component {
@@ -431,7 +437,8 @@ class GenericDetail extends React.Component {
         return (
             <div>
                 <h2>{this.entityName} detail</h2>
-                <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>
+                {canEdit( this.props.user.role, this.entityName ) &&
+                    <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>}
                 {this.renderDetail()}
             </div>
         );
@@ -466,7 +473,7 @@ export class BookDetail extends GenericDetail {
                             </thead>
                             <tbody>
                                 {this.state.volumes.map( volume =>
-                                    <tr>
+                                    <tr key={volume.id}>
                                         <td>{( volume.lent === false ) ? "Available" : "Lent"}</td>
                                         <td>{volume.barcodeId}</td>
                                     </tr>

@@ -111,19 +111,19 @@ class Base extends React.Component {
                     <Switch>
                         <Route exact path="/" component={ListBooks} />
                         <Route exact path="/login" component={( props ) => <Login onLogin={this.handleLogin} {...props} />} />
-                        <Route exact path="/books" component={ListBooks} />
-                        <Route exact path="/books/create" component={BookForm} />
-                        <Route exact path="/books/:id" component={BookDetail} />
-                        <Route exact path="/books/:id/edit" component={BookForm} />
-                        <Route exact path="/authors" component={ListAuthors} />
-                        <Route exact path="/authors/create" component={AuthorForm} />
-                        <Route exact path="/authors/:id/edit" component={AuthorForm} />
-                        <Route exact path="/users" component={ListUsers} />
-                        <Route exact path="/users/create" component={UserForm} />
-                        <Route exact path="/loans/create" component={LoanForm} />
-                        <Route exact path="/users/:id" component={UserDetail} />
-                        <Route exact path="/users/:id/edit" component={UserForm} />
-                        <Route exact path="/return" component={ReturnForm} />
+                        <Route exact path="/books" component={( props ) => <ListBooks user={this.state.user} {...props} />} />
+                        <Route exact path="/books/create" component={( props ) => <BookForm user={this.state.user} {...props} />} />
+                        <Route exact path="/books/:id" component={( props ) => <BookDetail user={this.state.user} {...props} />} />
+                        <Route exact path="/books/:id/edit" component={( props ) => <BookForm user={this.state.user} {...props} />} />
+                        <Route exact path="/authors" component={( props ) => <ListAuthors user={this.state.user} {...props} />} />
+                        <Route exact path="/authors/create" component={( props ) => <AuthorForm user={this.state.user} {...props} />} />
+                        <Route exact path="/authors/:id/edit" component={( props ) => <AuthorForm user={this.state.user} {...props} />} />
+                        <Route exact path="/users" component={( props ) => <ListUsers user={this.state.user} {...props} />} />
+                        <Route exact path="/users/create" component={( props ) => <UserForm user={this.state.user} {...props} />} />
+                        <Route exact path="/loans/create" component={( props ) => <LoanForm user={this.state.user} {...props} />} />
+                        <Route exact path="/users/:id" component={( props ) => <UserDetail user={this.state.user} {...props} />} />
+                        <Route exact path="/users/:id/edit" component={( props ) => <UserForm user={this.state.user} {...props} />} />
+                        <Route exact path="/return" component={( props ) => <ReturnForm user={this.state.user} {...props} />} />
                     </Switch>
                 </div>
             </div>
