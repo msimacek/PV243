@@ -26,7 +26,7 @@ export function tryLoginFromCookie() {
         credentials = {
             email: email,
             password: password,
-            user: JSON.parse(user),
+            user: JSON.parse( user ),
         }
     }
 }
@@ -46,7 +46,7 @@ export function logIn( email, password ) {
 
                     Cookies.set( "email", email );
                     Cookies.set( "password", password );
-                    Cookies.set( "user", JSON.stringify(user) );
+                    Cookies.set( "user", JSON.stringify( user ) );
                 } );
             }
             throw new Error( response.statusText );
@@ -76,4 +76,12 @@ export function apiPut( endpoint, data ) {
     };
     setAuthHeader( headers );
     return fetch( `/rest/${endpoint}`, { method: "PUT", body: JSON.stringify( data ), headers: headers } );
+}
+
+export function apiDelete( endpoint ) {
+    var headers = {
+        'Accept': 'application/json',
+    };
+    setAuthHeader( headers );
+    return fetch( `/rest/${endpoint}`, { method: "DELETE", headers: headers } );
 }

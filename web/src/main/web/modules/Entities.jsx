@@ -3,7 +3,7 @@ import * as B from 'react-bootstrap';
 import { Link, withRouter } from 'react-router-dom';
 import ReactSelect from 'react-select';
 
-import { apiGet, apiPost, apiPut } from './Api'
+import { apiGet, apiPost, apiPut, apiDelete } from './Api'
 
 function formControl( Component, { label, ...rest } ) {
     return (
@@ -419,8 +419,20 @@ export function ListUsers() {
 class GenericDetail extends React.Component {
     constructor( props ) {
         super( props );
-        this.state = { loaded: false };
+        this.state = { loaded: false, error: null };
         this.id = this.props.id || this.props.match.params.id;
+    }
+
+    handleDelete = () => {
+        if ( confirm( "Really delete?" ) ) {
+            apiDelete( `${this.endpoint}/${this.id}` )
+                .then(( response ) => {
+                    if ( response.ok )
+                        this.props.history.push( `/${this.endpoint}` );
+                    else
+                        this.setState( { error: response.statusText } );
+                } );
+        }
     }
 
     componentDidMount() {
@@ -437,8 +449,12 @@ class GenericDetail extends React.Component {
         return (
             <div>
                 <h2>{this.entityName} detail</h2>
+                {this.state.error && <div className="alert alert-danger">{this.state.error}</div>}
                 {canEdit( this.props.user.role, this.entityName ) &&
-                    <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>}
+                    <div>
+                        <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>
+                        <a href="#" className="btn btn-default" onClick={this.handleDelete}>Delete</a>
+                    </div>}
                 {this.renderDetail()}
             </div>
         );

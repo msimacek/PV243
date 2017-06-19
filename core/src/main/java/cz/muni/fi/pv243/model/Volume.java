@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,7 +35,7 @@ public class Volume implements Serializable {
     @JsonView({ Volume.class, User.class })
     private Book book;
 
-    @OneToMany(mappedBy = "volume")
+    @OneToMany(mappedBy = "volume", cascade=CascadeType.ALL)
     @JsonView(Volume.class)
     private List<Loan> loans = new ArrayList<>();
 

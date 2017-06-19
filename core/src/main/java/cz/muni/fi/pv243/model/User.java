@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -81,7 +82,7 @@ public class User implements Serializable {
     }
 
     @Column
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
     @JsonView(User.class)
     private List<Loan> loans = new ArrayList<>();
 
