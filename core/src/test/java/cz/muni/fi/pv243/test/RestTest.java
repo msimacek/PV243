@@ -161,6 +161,8 @@ public class RestTest {
                 .add("name", "Derp")
                 .add("surname", "Derpington")
                 .add("email", "derp@derp.me")
+                .add("password", "1234")
+                .add("role", "user")
                 .build();
         testCreate("users", user);
     }

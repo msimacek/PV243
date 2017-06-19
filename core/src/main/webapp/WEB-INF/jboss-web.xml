@@ -3,6 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="
   http://www.jboss.com/xml/ns/javaee
-  http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd">
+  http://www.jboss.org/j2ee/schema/jboss-web_10_0.xsd">
   <context-root>/rest</context-root>
+  <security-domain>library-domain</security-domain>
 </jboss-web>

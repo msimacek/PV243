@@ -1,7 +1,11 @@
 package cz.muni.fi.pv243.model;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -15,6 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
@@ -39,6 +44,38 @@ public class User implements Serializable {
     @Email
     @NotEmpty
     private String email;
+
+    @Column(nullable = false)
+    @JsonIgnore
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] hashBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+        String hash = Base64.getEncoder().encodeToString(hashBytes);
+        this.password = hash;
+
+    }
+
+    @Column(nullable = false)
+    private String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     @Column
     @OneToMany(mappedBy = "user")
