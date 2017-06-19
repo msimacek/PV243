@@ -364,6 +364,7 @@ class ListView extends React.Component {
             loaded: false,
             error: null,
             objects: [],
+            filter: "",
         };
     }
 
@@ -377,6 +378,10 @@ class ListView extends React.Component {
             } );
     }
 
+    handleFilterChange = ( event ) => {
+        this.setState( { filter: event.target.value } );
+    }
+
     render() {
         let content;
         if ( this.state.error )
@@ -385,19 +390,29 @@ class ListView extends React.Component {
             content = <div>Loading</div>;
         else if ( !this.state.objects.length )
             content = <div>No entities in the database</div>;
-        else
+        else {
+            let objects = this.state.objects;
+            if (this.state.filter)
+                objects = objects.filter(item => JSON.stringify(item).toLowerCase().includes(this.state.filter.toLowerCase()));
             content = (
                 <B.ListGroup>
-                    {this.state.objects.map( object =>
+                    {objects.map( object =>
                         <Link key={object.id} to={`/${this.props.endpoint}/${object.id}`} className="list-group-item list-group-item-action">
                             {this.props.renderObject( object )}
                         </Link>
                     )}
                 </B.ListGroup>
             );
+        }
         return (
             <div>
                 <h2>{this.props.title}</h2>
+                <form className="form-inline">
+                    <div className="form-group has-feedback">
+                        <input className="form-control" type="text" value={this.state.filter} onChange={this.handleFilterChange} />
+                        <i className="glyphicon glyphicon-search form-control-feedback"></i>
+                    </div>
+                </form>
                 {content}
             </div>
         );
