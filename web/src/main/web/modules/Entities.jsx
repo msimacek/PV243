@@ -379,7 +379,7 @@ class GenericDetail extends React.Component {
             return <div>Loading</div>;
         return (
             <div>
-                <h2>{this.entityName} detail - {this.state.title}</h2>
+                <h2>{this.entityName} detail</h2>
                 <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>
                 {this.renderDetail()}
             </div>
@@ -409,6 +409,51 @@ export class BookDetail extends GenericDetail {
                         {this.state.volumes.map( volume =>
                             <div>{volume.lent ? "Available" : "Lent"} {volume.barcodeId}</div>
                         )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+export class UserDetail extends GenericDetail {
+    constructor( props ) {
+        super( props );
+        this.endpoint = "users";
+        this.entityName = "User";
+    }
+
+    renderDetail() {
+        return (
+            <div>
+                <dl className="dl-horizontal">
+                    <dt>Name</dt><dd>{this.state.name}</dd>
+                    <dt>Surname</dt><dd>{this.state.surname}</dd>
+                    <dt>Email</dt><dd>{this.state.email}</dd>
+                </dl>
+                <div className="panel panel-default">
+                    <div className="panel-heading">Loans</div>
+                    <div className="panel-body">
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Author</th>
+                                    <th>Loan date</th>
+                                    <th>Return date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.loans.map( loan =>
+                                    <tr key={loan.id}>
+                                        <td>{loan.volume.book.title}</td>
+                                        <td>{authorsString( loan.volume.book.authors )}</td>
+                                        <td>{loan.loanDate}</td>
+                                        <td>{loan.returnDate}</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

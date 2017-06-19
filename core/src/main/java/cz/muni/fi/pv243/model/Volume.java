@@ -31,13 +31,14 @@ public class Volume implements Serializable {
     private long barcodeId;
 
     @ManyToOne
-    @JsonView(Volume.class)
+    @JsonView({ Volume.class, User.class })
     private Book book;
 
     @OneToMany(mappedBy = "volume")
     @JsonView(Volume.class)
     private List<Loan> loans = new ArrayList<>();
 
+    @JsonView({ Volume.class, Book.class })
     public boolean isLent() {
         for (Loan loan : loans) {
             if (loan.getReturnDate() == null)

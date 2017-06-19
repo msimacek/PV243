@@ -34,7 +34,7 @@ public class Loan implements Serializable {
     private User user;
 
     @ManyToOne
-    @JsonView(Loan.class)
+    @JsonView({ Loan.class, User.class })
     private Volume volume;
 
     public Long getId() {

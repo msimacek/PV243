@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom'
 import '../style.css'
 import 'react-select/dist/react-select.css'
-import { BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors, UserForm, ListUsers, LoanForm } from './Entities'
+import { BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors, UserForm, ListUsers, UserDetail, LoanForm } from './Entities'
 
 class NavItem extends React.Component {
     render() {
@@ -53,6 +53,7 @@ class Base extends React.Component {
                         <Route exact path="/users" component={ListUsers} />
                         <Route exact path="/users/create" component={UserForm} />
                         <Route exact path="/loans/create" component={LoanForm} />
+                        <Route exact path="/users/:id" component={UserDetail} />
                         <Route exact path="/users/:id/edit" component={UserForm} />
                     </Switch>
                 </div>

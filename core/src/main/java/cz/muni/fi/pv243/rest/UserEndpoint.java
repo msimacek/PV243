@@ -23,10 +23,19 @@ public class UserEndpoint extends AbstractEndpoint<User> {
     @Inject
     private UserService service;
 
+    @Override
+    @GET
+    @Path("/{id:[0-9][0-9]*}")
+    @Produces("application/json")
+    @JsonView(User.class)
+    public Response findById(@PathParam("id") Long id) {
+        return super.findById(id);
+    }
+
     @GET
     @Path("/email/{email}")
     @Produces("application/json")
-    @JsonView(DefaultView.class)
+    @JsonView(User.class)
     public Response findByEmail(@PathParam("email") String email) {
         User entity = service.findByEmail(email);
         if (entity == null) {

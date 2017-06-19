@@ -13,9 +13,11 @@ public class UserService extends AbstractService<User> {
 
     public User findByEmail(String email) {
         try {
-            return em.createQuery("from User where email = :email", User.class)
+            User user = em.createQuery("from User where email = :email", User.class)
                     .setParameter("email", email)
                     .getSingleResult();
+            load(user);
+            return user;
         } catch (NoResultException e) {
             return null;
         }
@@ -24,8 +26,13 @@ public class UserService extends AbstractService<User> {
     @Override
     public User findById(Object id) {
         User user = super.findById(id);
+        load(user);
+
+        return user;
+    }
+
+    private void load(User user) {
         if (user != null && user.getLoans() != null)
             user.getLoans().size();
-        return user;
     }
 }
