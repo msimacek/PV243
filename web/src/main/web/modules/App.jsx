@@ -3,7 +3,7 @@ import { BrowserRouter, Switch, Route, Link, withRouter } from 'react-router-dom
 import '../style.css'
 import 'react-select/dist/react-select.css'
 import { BookForm, ListBooks, BookDetail, AuthorForm, ListAuthors, UserForm, ListUsers, UserDetail, LoanForm } from './Entities'
-import { logIn } from './Api'
+import { logIn, logOut, credentials } from './Api'
 
 class NavItem extends React.Component {
     render() {
@@ -40,10 +40,8 @@ class NavBar extends React.Component {
 class Login extends React.Component {
     handleSubmit = ( event ) => {
         event.preventDefault();
-        logIn(this.refs.email.value, this.refs.password.value,
-                () => {
-                    this.props.history.push("/");
-                });
+        logIn( this.refs.email.value, this.refs.password.value )
+            .then(this.props.onLogin);
     }
 
     render() {
@@ -51,15 +49,15 @@ class Login extends React.Component {
             <div>
                 <h2>Log in </h2>
                 <form onSubmit={this.handleSubmit}>
-                    <div class="form-group">
+                    <div className="form-group">
                         <label>Email</label>
                         <input type="text" className="form-control" ref="email" />
                     </div>
-                    <div class="form-group">
+                    <div className="form-group">
                         <label>Password</label>
                         <input className="form-control" type="password" ref="password" />
                     </div>
-                    <div class="form-group">
+                    <div className="form-group">
                         <button type="submit">Log in</button>
                     </div>
                 </form>
@@ -69,14 +67,34 @@ class Login extends React.Component {
 }
 
 class Base extends React.Component {
+    constructor( props ) {
+        super( props );
+        this.state = { email: null };
+    }
+
+    handleLogin = () => {
+        this.setState( { email: credentials.email } );
+        this.props.history.push( "/" );
+    }
+
+    handleLogout = () => {
+        logOut();
+        this.setState( { email: null } );
+        this.props.history.push( "/" );
+    }
+
     render() {
         return (
             <div>
                 <NavBar />
                 <div className="container">
+                    {this.state.email && <div>
+                        Logged in as {this.state.email}
+                        <button type="button" onClick={this.handleLogout}>Log out</button>
+                    </div>}
                     <Switch>
                         <Route exact path="/" component={ListBooks} />
-                        <Route exact path="/login" component={Login} />
+                        <Route exact path="/login" component={( props ) => <Login onLogin={this.handleLogin} {...props} />} />
                         <Route exact path="/books" component={ListBooks} />
                         <Route exact path="/books/create" component={BookForm} />
                         <Route exact path="/books/:id" component={BookDetail} />
@@ -98,9 +116,10 @@ class Base extends React.Component {
 
 export default class App extends React.Component {
     render() {
+        var BaseComponent = withRouter(Base);
         return (
             <BrowserRouter>
-                <Base />
+                <BaseComponent />
             </BrowserRouter>
         );
     }

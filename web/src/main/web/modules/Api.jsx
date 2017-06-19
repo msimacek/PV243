@@ -16,21 +16,25 @@ export function apiGet( endpoint ) {
         } );
 }
 
-export function logIn( email, password, onSuccess, onError ) {
+export function logIn( email, password ) {
     var headers = {
         Authorization: 'Basic ' + btoa( email + ":" + password ),
         Accept: 'application/json',
     }
-    fetch( "/rest/profile", { headers: headers } )
+    return fetch( "/rest/profile", { headers: headers } )
         .then( response => {
             if ( response.ok ) {
                 credentials.email = email;
                 credentials.password = password;
-                onSuccess( response );
-            } else {
-                onError( response );
+
+                return response.json();
             }
+            throw new Error( response.statusText );
         } );
+}
+
+export function logOut() {
+    credentials = {};
 }
 
 export function apiPost( endpoint, data ) {
