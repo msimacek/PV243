@@ -486,6 +486,18 @@ export class BookDetail extends GenericDetail {
         this.entityName = "Book";
     }
 
+    handleVolumeDelete( id ) {
+        return () => {
+            apiDelete( `/volumes/${id}` )
+                .then(( response ) => {
+                    if ( response.ok )
+                        this.props.history.push( `/books/${this.state.id}` );
+                    else
+                        this.setState( { error: response.statusText } );
+                } );
+        }
+    }
+
     renderDetail() {
         return (
             <div>
@@ -503,6 +515,7 @@ export class BookDetail extends GenericDetail {
                                 <tr>
                                     <th>State</th>
                                     <th>Barcode ID</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -510,6 +523,7 @@ export class BookDetail extends GenericDetail {
                                     <tr key={volume.id}>
                                         <td>{( volume.lent === false ) ? "Available" : "Lent"}</td>
                                         <td>{volume.barcodeId}</td>
+                                        <td><a href="#" onClick={this.handleVolumeDelete( volume.id )}>Delete</a></td>
                                     </tr>
                                 )}
                             </tbody>
