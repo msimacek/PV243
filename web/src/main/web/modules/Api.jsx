@@ -1,6 +1,7 @@
 import * as Cookies from "js-cookie";
 
 export var credentials = {};
+export const websocket = connectWebsocket();
 
 function setAuthHeader( headers ) {
     if ( credentials.password )
@@ -84,4 +85,13 @@ export function apiDelete( endpoint ) {
     };
     setAuthHeader( headers );
     return fetch( `/rest/${endpoint}`, { method: "DELETE", headers: headers } );
+}
+
+function connectWebsocket () {
+    const websocket = new WebSocket('ws://localhost:8080/websocket');
+    websocket.open();
+
+    window.addEventListener('unload', () => websocket.close());
+
+    return websocket
 }
