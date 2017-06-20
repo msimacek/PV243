@@ -45,7 +45,6 @@ Backend
 -------
 Backend war can be deployed using maven by running `mvn wildfly:deploy` from
 core directory.
-To deploy without default H2 datasource, use `no-ds` maven profile (`mvn -Pno-ds wildfly:deploy`).
 
 Frontend
 --------

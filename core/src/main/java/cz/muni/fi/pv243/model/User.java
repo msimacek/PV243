@@ -16,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.Email;
@@ -28,7 +27,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @XmlRootElement
-@Table(name="`User`")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -85,7 +83,7 @@ public class User implements Serializable {
     }
 
     @Column
-    @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonView(User.class)
     @OrderBy("loanDate")
     private List<Loan> loans = new ArrayList<>();
