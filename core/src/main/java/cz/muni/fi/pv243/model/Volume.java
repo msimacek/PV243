@@ -28,7 +28,7 @@ public class Volume implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Min(1)
     private long barcodeId;
 
@@ -36,7 +36,7 @@ public class Volume implements Serializable {
     @JsonView({ Volume.class, User.class })
     private Book book;
 
-    @OneToMany(mappedBy = "volume", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "volume", cascade = CascadeType.ALL)
     @JsonView(Volume.class)
     @OrderBy("loanDate")
     private List<Loan> loans = new ArrayList<>();

@@ -347,7 +347,8 @@ export class ReturnForm extends GenericForm {
         this.state = { barcodeId: "" };
         this.entityName = "volume";
         this.action = "Return";
-        this.endpoint = "/volumes/return"
+        this.endpoint = "/volumes/return";
+        this.redirect = '/';
     }
 
     renderForm() {
