@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import cz.muni.fi.pv243.model.DefaultView;
 import cz.muni.fi.pv243.service.AbstractService;
 
 /**
@@ -33,10 +35,7 @@ public abstract class AbstractEndpoint<T> {
     @Consumes("application/json")
     @Produces("application/json")
     @JsonView(DefaultView.class)
-    public Response create(@Valid T entity) {
-        if (entity == null) {
-            return Response.status(Status.BAD_REQUEST).build();
-        }
+    public Response create(@Valid @NotNull T entity) {
         service.create(entity);
         URI url = UriBuilder.fromResource(getClass()).path(service.getEntityId(entity).toString()).build();
         return Response.created(url).entity(entity).build();

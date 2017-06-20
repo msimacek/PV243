@@ -155,19 +155,6 @@ public class RestTest {
     }
 
     @Test
-    @ShouldMatchDataSet(value = "user.yml", excludeColumns = "id")
-    public void testCreateUser() {
-        JsonObject user = Json.createObjectBuilder()
-                .add("name", "Derp")
-                .add("surname", "Derpington")
-                .add("email", "derp@derp.me")
-                .add("password", "1234")
-                .add("role", "user")
-                .build();
-        testCreate("users", user);
-    }
-
-    @Test
     @UsingDataSet("user.yml")
     public void testFindUserById() {
         testFind("users/1")

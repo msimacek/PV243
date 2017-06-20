@@ -1,4 +1,4 @@
-package cz.muni.fi.pv243.rest;
+package cz.muni.fi.pv243.model;
 
 public class DefaultView {
 

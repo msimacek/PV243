@@ -19,28 +19,6 @@ class NavItem extends React.Component {
     }
 }
 
-class NavBar extends React.Component {
-    render() {
-        return (
-            <nav className="navbar container">
-                <div className="navbar-header">
-                    <a className="navbar-brand" href="#">Library manager</a>
-                </div>
-                <ul className="nav navbar-nav">
-                    <NavItem to="/books">List books</NavItem>
-                    {this.props.canCreate && <NavItem to="/books/create">Create book</NavItem>}
-                    <NavItem to="/authors">List authors</NavItem>
-                    {this.props.canCreate && <NavItem to="/authors/create">Create author</NavItem>}
-                    <NavItem to="/users">List users</NavItem>
-                    {this.props.canCreate && <NavItem to="/users/create">Create user</NavItem>}
-                    {this.props.canCreate && <NavItem to="/loans/create">Create loan</NavItem>}
-                    {this.props.canCreate && <NavItem to="/return">Return books</NavItem>}
-                </ul>
-            </nav>
-        );
-    }
-}
-
 class Login extends React.Component {
     handleSubmit = ( event ) => {
         event.preventDefault();
@@ -79,6 +57,14 @@ class Base extends React.Component {
         };
     }
 
+    isAdmin() {
+        return this.state.user && this.state.user.role == "admin";
+    }
+
+    isCheckout() {
+        return this.state.user && ( this.state.user.role == "admin" || this.state.user.role == "checkout" );
+    }
+
     handleLogin = () => {
         this.setState( {
             user: credentials.user,
@@ -95,7 +81,21 @@ class Base extends React.Component {
     render() {
         return (
             <div>
-                <NavBar canCreate={this.state.user && this.state.user.role == "admin"} />
+                <nav className="navbar container">
+                    <div className="navbar-header">
+                        <a className="navbar-brand" href="#">Library manager</a>
+                    </div>
+                    <ul className="nav navbar-nav">
+                        <NavItem to="/books">List books</NavItem>
+                        {this.isAdmin() && <NavItem to="/books/create">Create book</NavItem>}
+                        <NavItem to="/authors">List authors</NavItem>
+                        {this.isAdmin() && <NavItem to="/authors/create">Create author</NavItem>}
+                        {this.isCheckout() && <NavItem to="/users">List users</NavItem>}
+                        {this.isCheckout() && <NavItem to="/users/create">Create user</NavItem>}
+                        {this.isCheckout() && <NavItem to="/loans/create">Create loan</NavItem>}
+                        {this.isCheckout() && <NavItem to="/return">Return books</NavItem>}
+                    </ul>
+                </nav>
                 <nav className="navbar container">
                     <ul className="nav navbar-nav">
                         {this.state.user &&

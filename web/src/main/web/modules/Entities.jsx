@@ -43,6 +43,8 @@ function authorsString( authors ) {
 function canEdit( role, entity ) {
     if ( role == "admin" )
         return true;
+    if ( role == "checkout" && ["loan", "volume"].contains( entity ) )
+        return true;
     return false;
 }
 
@@ -392,8 +394,8 @@ class ListView extends React.Component {
             content = <div>No entities in the database</div>;
         else {
             let objects = this.state.objects;
-            if (this.state.filter)
-                objects = objects.filter(item => JSON.stringify(item).toLowerCase().includes(this.state.filter.toLowerCase()));
+            if ( this.state.filter )
+                objects = objects.filter( item => JSON.stringify( item ).toLowerCase().includes( this.state.filter.toLowerCase() ) );
             content = (
                 <B.ListGroup>
                     {objects.map( object =>
@@ -465,7 +467,7 @@ class GenericDetail extends React.Component {
             <div>
                 <h2>{this.entityName} detail</h2>
                 {this.state.error && <div className="alert alert-danger">{this.state.error}</div>}
-                {canEdit( this.props.user.role, this.entityName ) &&
+                {this.props.user && canEdit( this.props.user.role, this.entityName ) &&
                     <div>
                         <Link className="btn btn-default" to={`/${this.endpoint}/${this.state.id}/edit`}>Edit</Link>
                         <a href="#" className="btn btn-default" onClick={this.handleDelete}>Delete</a>

@@ -41,7 +41,7 @@ public class Book implements Serializable {
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JsonView({Book.class, Volume.class, User.class, Loan.class})
+    @JsonView({ Book.class, Volume.class, User.class, Loan.class, DefaultView.class })
     private List<Author> authors = new ArrayList<>();
 
     public List<Author> getAuthors() {
@@ -60,7 +60,7 @@ public class Book implements Serializable {
         this.id = id;
     }
 
-    @OneToMany(mappedBy = "book", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonView(Book.class)
     private List<Volume> volumes = new ArrayList<>();
 
