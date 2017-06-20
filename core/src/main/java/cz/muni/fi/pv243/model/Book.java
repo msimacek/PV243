@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -42,6 +43,7 @@ public class Book implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JsonView({ Book.class, Volume.class, User.class, Loan.class, DefaultView.class })
+    @OrderBy("name")
     private List<Author> authors = new ArrayList<>();
 
     public List<Author> getAuthors() {

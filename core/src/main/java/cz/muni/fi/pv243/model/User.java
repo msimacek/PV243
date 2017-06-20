@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -86,6 +87,7 @@ public class User implements Serializable {
     @Column
     @OneToMany(mappedBy = "user", cascade=CascadeType.ALL)
     @JsonView(User.class)
+    @OrderBy("loanDate")
     private List<Loan> loans = new ArrayList<>();
 
     public List<Loan> getLoans() {

@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.Min;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -37,6 +38,7 @@ public class Volume implements Serializable {
 
     @OneToMany(mappedBy = "volume", cascade=CascadeType.ALL)
     @JsonView(Volume.class)
+    @OrderBy("loanDate")
     private List<Loan> loans = new ArrayList<>();
 
     @JsonView({ Volume.class, Book.class })
