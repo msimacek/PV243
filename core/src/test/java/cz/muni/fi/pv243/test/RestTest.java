@@ -24,6 +24,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import cz.muni.fi.pv243.messaging.Sender;
 import cz.muni.fi.pv243.model.Book;
 import cz.muni.fi.pv243.rest.BookEndpoint;
 import cz.muni.fi.pv243.service.BookService;
@@ -44,6 +45,7 @@ public class RestTest {
                 .addPackage(Book.class.getPackage())
                 .addPackage(BookService.class.getPackage())
                 .addPackage(BookEndpoint.class.getPackage())
+                .addPackage(Sender.class.getPackage())
                 .addAsLibraries(resolver.resolve("io.rest-assured:rest-assured").withTransitivity().asFile())
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }

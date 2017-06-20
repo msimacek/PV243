@@ -19,6 +19,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import cz.muni.fi.pv243.messaging.Sender;
 import cz.muni.fi.pv243.model.Author;
 import cz.muni.fi.pv243.model.Book;
 import cz.muni.fi.pv243.service.BookService;
@@ -31,6 +32,7 @@ public class ServiceTest {
                 .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                 .addPackage(Book.class.getPackage())
                 .addPackage(BookService.class.getPackage())
+                .addPackage(Sender.class.getPackage())
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
