@@ -2,7 +2,6 @@ package cz.muni.fi.pv243.messaging;
 
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.jms.JMSContext;
 import javax.jms.Queue;
@@ -10,7 +9,7 @@ import javax.jms.Queue;
 @Stateless
 public class Sender {
 
-    @Resource(mappedName = "java:jboss/jms/queue/myQueue")
+    @Resource(mappedName = "java:/jboss/exported/jms/queue/myQueue")
     private Queue queue;
 
     @Inject

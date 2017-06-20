@@ -15,7 +15,7 @@ public class Consumer {
 
     private JMSConsumer consumer;
 
-    @Resource(mappedName = "java:/jms/queue/myQueue")
+    @Resource(mappedName = "java:/jboss/exported/jms/queue/myQueue")
     Queue queue;
 
     public Consumer() {
