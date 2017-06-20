@@ -76,7 +76,14 @@ public class UserEndpoint extends AbstractEndpoint<User> {
     @Produces("application/json")
     @JsonView(User.class)
     public Response findById(@PathParam("id") Long id) {
-        return super.findById(id);
+        if (securityContext.isUserInRole("admin") || securityContext.isUserInRole("checkout"))
+            return super.findById(id);
+        if (securityContext.isUserInRole("user")) {
+            User currentUser = service.findByEmail(securityContext.getUserPrincipal().getName());
+            if (currentUser != null && currentUser.getId().equals(id))
+                return super.findById(id);
+        }
+        return Response.status(401).build();
     }
 
     @GET

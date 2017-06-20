@@ -156,13 +156,6 @@ public class RestTest {
 
     @Test
     @UsingDataSet("user.yml")
-    public void testFindUserById() {
-        testFind("users/1")
-                .body("email", equalTo("derp@derp.me"));
-    }
-
-    @Test
-    @UsingDataSet("user.yml")
     public void testFindUserByEmail() {
         testFind("users/email/derp@derp.me")
                 .body("id", equalTo(1));
