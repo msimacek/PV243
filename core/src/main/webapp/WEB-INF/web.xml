@@ -59,4 +59,6 @@
   <security-role>
     <role-name>admin</role-name>
   </security-role>
+
+  <distributable />
 </web-app>
