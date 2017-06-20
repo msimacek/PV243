@@ -301,6 +301,7 @@ export class BookForm extends GenericForm {
             <div>
                 <Input type="text" value={this.state.title} onChange={this.handleInputChange} name="title" label="Title" />
                 <Input type="text" value={this.state.isbn} onChange={this.handleInputChange} name="isbn" label="ISBN" />
+                <Input type="text" value={this.state.description} onChange={this.handleInputChange} name="description" label="Description" />
                 <Select multi onChange={this.handleAuthorsChange}
                     loadOptions={this.getAuthors} value={this.state.authors}
                     name="authors" label="Authors" />
