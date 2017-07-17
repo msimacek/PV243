@@ -3,7 +3,7 @@ import * as B from 'react-bootstrap';
 import { Link, withRouter } from 'react-router-dom';
 import ReactSelect from 'react-select';
 
-import { apiGet, apiPost, apiPut, apiDelete } from './Api'
+import { apiGet, apiPost, apiPut, websocket, apiDelete} from './Api'
 
 function formControl( Component, { label, ...rest } ) {
     return (
@@ -433,6 +433,38 @@ export function ListAuthors() {
 
 export function ListUsers() {
     return <ListView endpoint="users" title="All users" renderObject={user => `${user.name} ${user.surname} (${user.email})`} />;
+}
+
+class Books extends React.PureComponent {
+    componentWillMount () {
+        websocket.addEventListener('message', this.onMessage)
+    }
+
+    componentWillUnmount () {
+        websocket.removeEventListener('message', this.onMessage)
+    }
+
+    onMessage = (book) => {
+        this.setState({
+            books: this.state.books.push(book)
+        })
+    }
+
+    sendMessage = () => {
+        websocket.send('lol')
+    }
+
+    render () {
+        return (
+            <div>
+                {this.state.books.map((book, i) => (
+                    <span key={i}>{book}</span>
+                ))}
+
+                <button onClick={this.sendMessage}>klik</button>
+            </div>
+        )
+    }
 }
 
 class GenericDetail extends React.Component {
